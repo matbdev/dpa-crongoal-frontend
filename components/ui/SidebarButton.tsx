@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MenuItem } from "./Sidebar";
+import { MenuItem } from "../layout/Sidebar";
 
 interface SidebarButtonProps {
     item: MenuItem;

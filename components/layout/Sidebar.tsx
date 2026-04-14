@@ -1,8 +1,9 @@
 "use client"
 
-import { LayoutDashboard, ListChecks, Target, Trophy, Settings, PanelLeftClose, PanelLeftOpen, User, LogOut } from "lucide-react";
 import { useState } from "react";
-import SidebarButton from "./SidebarButton";
+import SidebarButton from "../ui/SidebarButton";
+import { LuLayoutDashboard, LuListChecks, LuLogOut, LuPanelLeftClose, LuPanelLeftOpen, LuSettings, LuTarget, LuTrophy, LuUser } from "react-icons/lu";
+import { FaAward } from "react-icons/fa";
 
 export interface MenuItem {
     label: string;
@@ -19,37 +20,42 @@ export default function Sidebar() {
         {
             label: "Dashboard",
             href: "/dashboard",
-            icon: LayoutDashboard,
+            icon: LuLayoutDashboard,
         },
         {
             label: "Tarefas",
             href: "/tasks",
-            icon: ListChecks,
+            icon: LuListChecks,
         },
         {
             label: "Projetos",
             href: "/projects",
-            icon: Target,
+            icon: LuTarget,
         },
         {
             label: "Rotinas",
             href: "/routines",
-            icon: Trophy,
+            icon: LuTrophy,
+        },
+        {
+            label: "Recompensas",
+            href: "/rewards",
+            icon: FaAward,
         },
         {
             label: "Configurações",
             href: "/settings",
-            icon: Settings,
+            icon: LuSettings,
         },
         {
             label: "Perfil",
             href: "/profile",
-            icon: User,
+            icon: LuUser,
         },
         {
             label: "Sair",
             href: "/logout",
-            icon: LogOut,
+            icon: LuLogOut,
             color: "hover:bg-danger/70"
         },
     ];
@@ -60,7 +66,7 @@ export default function Sidebar() {
             <div className={`py-4 flex items-center ${isCollapsed ? "px-2 justify-center" : "px-4 justify-between"}`}>
                 <h1 className={`text-xl font-bold whitespace-nowrap transition-all duration-300 ${isCollapsed ? "opacity-0 scale-0 w-0" : "opacity-100 scale-100"}`}>CronGoal</h1>
                 <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-1 hover:bg-hover-sidebar rounded transition-colors">
-                    {isCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+                    {isCollapsed ? <LuPanelLeftOpen size={20} /> : <LuPanelLeftClose size={20} />}
                 </button>
             </div>
 

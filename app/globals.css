@@ -5,6 +5,8 @@
 :root {
   --bg-main: #DEDEDE;
   --bg-sidebar: #C8C8C8;
+  --bg-card: #F4F4F5;
+  --border-card: #D4D4D8;
   --hover-sidebar: #B0B0B0;
   --text-primary: #363636;
   --text-secondary: #5E5E5E;
@@ -14,6 +16,8 @@
 .dark {
   --bg-main: #1F1F21;
   --bg-sidebar: #18181A;
+  --bg-card: #27272A;
+  --border-card: #3F3F46;
   --hover-sidebar: #2A2A2C;
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
@@ -33,6 +37,8 @@
   /* Cores dinâmicas */
   --color-bg-main: var(--bg-main);
   --color-bg-sidebar: var(--bg-sidebar);
+  --color-bg-card: var(--bg-card);
+  --color-border-card: var(--border-card);
   --color-hover-sidebar: var(--hover-sidebar);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);

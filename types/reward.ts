@@ -7,3 +7,11 @@ export interface Reward {
     icon?: string;
     userId?: string;
 }
+
+export interface Redeem {
+    id?: string;
+    redeemDate: string;
+    spentPoints: number;
+    userId: string;
+    rewardId: string;
+}

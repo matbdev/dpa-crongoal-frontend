@@ -26,6 +26,7 @@
 /* Cores fixas */
 :root {
   --color-surface: #1A2A54;
+  --color-secondary: #2f4d98;
   --color-border: #2A3B69;
   --color-accent: #933BBC;
   --color-success: #0F835D;
@@ -45,6 +46,7 @@
 
   /* Cores fixas */
   --color-surface: var(--color-surface);
+  --color-secondary: var(--color-secondary);
   --color-border: var(--color-border);
   --color-accent: var(--color-accent);
   --color-success: var(--color-success);

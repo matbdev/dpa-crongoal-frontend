@@ -57,8 +57,12 @@ export default function AddNewRewardPopUp({ onClose, onSuccess }: { onClose: () 
             } else {
                 onClose();
             }
-        } catch (error) {
+        } catch (error: any) {
+            const message = error.response?.data?.errors?.[0]?.message ||
+                error.response?.data?.error ||
+                "Erro ao realizar login";
             toast.error("Erro ao criar a recompensa");
+            console.log(message)
         }
     }
 

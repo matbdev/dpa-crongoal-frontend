@@ -5,8 +5,7 @@ export default function Home() {
     <>
       <Navbar />
       <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-        <h1>Olá, Next.js! 🚀</h1>
-        <p>Esta é a minha primeira página renderizada no servidor.</p>
+        <h1>PÁGINA INICIAL</h1>
       </main>
     </>
   );

@@ -45,7 +45,7 @@ export default function Navbar({ showLogin = true, showRegister = true }: Navbar
 
                         {showLogin && (
                             <Link
-                                href="/login"
+                                href="/auth"
                                 className="flex items-center border border-accent gap-2 px-4 py-2 rounded-lg text-sm font-medium text-accent hover:bg-accent/20 transition-colors"
                             >
                                 <LuLogIn size={16} />
@@ -55,7 +55,7 @@ export default function Navbar({ showLogin = true, showRegister = true }: Navbar
 
                         {showRegister && (
                             <Link
-                                href="/register"
+                                href="/auth?mode=register"
                                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-accent hover:bg-accent/90 transition-colors"
                             >
                                 <LuUserPlus size={16} />

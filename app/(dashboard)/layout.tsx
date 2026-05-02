@@ -10,7 +10,7 @@ export default function DashboardLayout({
         <div className="flex h-screen">
             <Sidebar />
             <div className="flex flex-col flex-1 overflow-hidden">
-                <Navbar showLogin={false} showRegister={false} />
+                <Navbar showLogin={false} showRegister={false} showUserPoints={true} />
                 <main className="flex-1 overflow-y-auto">
                     {children}
                 </main>

@@ -11,6 +11,11 @@ export async function getProjects(): Promise<Project[]> {
     return response.data;
 }
 
+export async function getProjectCount(): Promise<number> {
+    const response = await api.get('/api/project/count');
+    return response.data;
+}
+
 export async function getProjectById(id: string): Promise<Project> {
     const response = await api.get(`/api/project/${id}`);
     return response.data;

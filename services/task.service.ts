@@ -11,6 +11,11 @@ export async function getTasks(): Promise<Task[]> {
     return response.data;
 }
 
+export async function getTaskCount(): Promise<number> {
+    const response = await api.get('/api/task/count');
+    return response.data;
+}
+
 export async function getTaskById(id: string): Promise<Task> {
     const response = await api.get(`/api/task/${id}`);
     return response.data;

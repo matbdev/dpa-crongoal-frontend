@@ -18,11 +18,10 @@ export default function TaskCard({ task, onUpdate, onDelete, onComplete }: TaskC
 
     const handleCompleteTask = async () => {
         try {
+            await TaskService.createDailyRegister({ taskId: task.id as string, isDone: true });
+            toast.success("Tarefa concluída!");
             if (onComplete) {
                 onComplete(task.id as string);
-            } else {
-                await TaskService.createDailyRegister({ taskId: task.id as string, isDone: true });
-                toast.success("Tarefa concluída!");
             }
         } catch (error: any) {
             toast.error("Erro ao concluir tarefa");
@@ -59,9 +58,9 @@ export default function TaskCard({ task, onUpdate, onDelete, onComplete }: TaskC
         <div className="flex flex-col h-full gap-3 rounded-xl p-5 border transition-all bg-bg-card border-border-card hover:border-accent hover:shadow-md">
             {isPopUpEditOpen && <AddNewTaskPopUp
                 onClose={() => { setIsPopUpEditOpen(false) }}
-                onSuccess={() => {
+                onSuccess={(updatedTask: Task) => {
                     setIsPopUpEditOpen(false);
-                    handleUpdateTask(task);
+                    handleUpdateTask(updatedTask);
                 }}
                 task={task}
             />}

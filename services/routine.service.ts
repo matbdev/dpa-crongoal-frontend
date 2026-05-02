@@ -11,6 +11,11 @@ export async function getRoutines(): Promise<Routine[]> {
     return response.data;
 }
 
+export async function getRoutineCount(): Promise<number> {
+    const response = await api.get('/api/routine/count');
+    return response.data;
+}
+
 export async function getRoutineById(id: string): Promise<Routine> {
     const response = await api.get(`/api/routine/${id}`);
     return response.data;

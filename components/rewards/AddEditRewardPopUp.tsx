@@ -160,7 +160,7 @@ export default function AddEditRewardPopUp({ onClose, onSuccess, reward }: AddEd
                                 <div className="flex flex-row items-center gap-2">
                                     <label
                                         htmlFor="reward-icon"
-                                        className={`flex items-center justify-center h-11 w-14 bg-bg-card border rounded-lg hover:text-accent hover:border-accent hover:bg-accent/10 transition-colors cursor-pointer ${icon ? 'border-accent text-accent bg-accent/5' : 'border-border-card text-text-secondary'}`}
+                                        className={`flex items-center justify-center h-11 w-14 bg-bg-main border rounded-lg hover:text-accent hover:border-accent hover:bg-accent/10 transition-colors cursor-pointer ${icon ? 'border-accent text-accent bg-accent/5' : 'border-border-card text-text-secondary'}`}
                                         title={icon || `Escolher ícone (max ${maxBytesForImage / 1024}kb)`}
                                     >
                                         <FaImage size={18} />

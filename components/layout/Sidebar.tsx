@@ -54,11 +54,12 @@ export default function Sidebar() {
         },
         {
             label: "Sair",
-            href: "/logout",
+            href: "/",
             icon: LuLogOut,
             color: "hover:bg-danger/70"
         },
     ];
+
     return (
         <aside className={`flex flex-col h-full bg-bg-sidebar border-r border-border transition-all duration-300 overflow-hidden ${isCollapsed ? "w-16" : "w-48"}`}>
 

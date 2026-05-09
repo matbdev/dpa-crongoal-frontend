@@ -80,7 +80,7 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
                 <div className="flex flex-col gap-5 mt-2">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="routine-name" text="Nome da Rotina" />
+                            <Label htmlFor="routine-name" text="Nome da Rotina" span={<span className="text-danger">*</span>} />
                             <Controller
                                 name="name"
                                 control={control}

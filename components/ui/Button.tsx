@@ -59,6 +59,17 @@ export default function Button({
     const combinedClasses = `${baseStyles} ${variantStyles} ${className}`.trim();
 
     if (href) {
+        const isExternal = href.startsWith("http://") || href.startsWith("https://");
+
+        if (isExternal) {
+            return (
+                <a href={href} className={combinedClasses} onClick={onClick}>
+                    {icon}
+                    {text && <span>{text}</span>}
+                </a>
+            );
+        }
+
         return (
             <Link href={href} className={combinedClasses} onClick={onClick}>
                 {icon}

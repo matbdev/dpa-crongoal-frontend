@@ -104,7 +104,7 @@ export default function AddEditRewardPopUp({ onClose, onSuccess, reward }: AddEd
                 <div className="flex flex-col gap-5 mt-2">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="reward-title" text="Título da Recompensa" />
+                            <Label htmlFor="reward-title" text="Título da Recompensa" span={<span className="text-danger">*</span>} />
                             <Controller
                                 name="title"
                                 control={control}
@@ -137,7 +137,7 @@ export default function AddEditRewardPopUp({ onClose, onSuccess, reward }: AddEd
 
                         <div className="flex flex-row gap-4">
                             <div className="flex flex-col gap-1.5 flex-1">
-                                <Label htmlFor="reward-cost" text="Custo" span={<span className="font-normal text-warning">(Pontos)</span>} />
+                                <Label htmlFor="reward-cost" text="Custo" span={<><span className="text-danger">*</span> <span className="font-normal text-warning">(Pontos)</span></>} />
                                 <Controller
                                     name="pointsToGet"
                                     control={control}

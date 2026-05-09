@@ -1,5 +1,5 @@
 import { Project } from "@/types/project";
-import { LuCoins, LuCheck, LuPencil, LuTrash2, LuCalendar } from "react-icons/lu";
+import { LuCheck, LuPencil, LuTrash2, LuCalendar } from "react-icons/lu";
 import * as ProjectService from "@/services/project.service";
 import toast from "react-hot-toast";
 import Button from "../ui/Button";
@@ -73,14 +73,16 @@ export default function ProjectCard({ project, onUpdate, onDelete, onComplete }:
                         )}
                     </div>
                 </div>
-            </div>
-
-            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-row items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 font-bold text-warning whitespace-nowrap">
                     <LuCalendar size={18} />
                     <span>{project.limitDate.split("T")[0]}</span>
                 </div>
+            </div>
 
+            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-row items-center justify-between gap-2">
+                <div>
+                    <p className="text-sm mt-1 text-text-secondary">Tasks: teste</p>
+                </div>
                 <div className="flex flex-row gap-2">
                     <Button
                         icon={<LuTrash2 />}

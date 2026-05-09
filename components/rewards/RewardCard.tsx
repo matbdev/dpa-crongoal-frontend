@@ -66,7 +66,7 @@ export default function RewardCard({ reward, onUpdate, onDelete }: RewardCardPro
                     </div>
                 </div>
                 {reward.icon && (
-                    <img src={reward.icon} alt={reward.title} className="w-10 h-10 rounded-full" />
+                    <img src={reward.icon} alt={reward.title} className="w-12 h-12 text-sm" />
                 )}
             </div>
 

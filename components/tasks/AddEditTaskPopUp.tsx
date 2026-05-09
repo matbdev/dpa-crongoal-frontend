@@ -84,7 +84,7 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task }: AddNewTask
                 <div className="flex flex-col gap-5 mt-2">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="task-title" text="Título da Tarefa" />
+                            <Label htmlFor="task-title" text="Título da Tarefa" span={<span className="text-danger">*</span>} />
                             <Controller
                                 name="title"
                                 control={control}
@@ -117,7 +117,7 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task }: AddNewTask
 
                         <div className="flex flex-row gap-4">
                             <div className="flex flex-col gap-1.5 flex-1">
-                                <Label htmlFor="task-cost" text="Valor" span={<span className="font-normal text-warning">(Pontos)</span>} />
+                                <Label htmlFor="task-cost" text="Valor" span={<><span className="text-danger">*</span> <span className="font-normal text-warning">(Pontos)</span></>} />
                                 <Controller
                                     name="generatedPoints"
                                     control={control}

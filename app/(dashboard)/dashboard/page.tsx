@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import { getTaskCount, getDailyTasks } from "@/services/task.service";
 import { getProjectCount, getProjects } from "@/services/project.service";
@@ -64,6 +65,9 @@ function getTodayProgress(dailyTasks: DailyRegister[]): { done: number; total: n
 }
 
 export default function DashboardPage() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
     const [counts, setCounts] = useState({
         tasks: 0,
         projects: 0,
@@ -78,6 +82,16 @@ export default function DashboardPage() {
     const [todayProgress, setTodayProgress] = useState({ done: 0, total: 0 });
     const [weeklyData, setWeeklyData] = useState<number[]>(new Array(7).fill(0));
     const [isLoading, setIsLoading] = useState(true);
+
+    // Handle Google OAuth callback: extract token from URL and save to localStorage
+    useEffect(() => {
+        const accessToken = searchParams.get("accessToken");
+        if (accessToken) {
+            localStorage.setItem("token", accessToken);
+            // Clean the URL to remove the token from the address bar / browser history
+            router.replace("/dashboard");
+        }
+    }, [searchParams, router]);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -158,7 +172,7 @@ export default function DashboardPage() {
                     <div className="h-8 w-64 rounded-lg bg-bg-card animate-pulse"></div>
                 ) : (
                     <h1 className="text-2xl font-bold text-text-primary">
-                        {getGreeting()}{userName ? `, ${userName.split(" ")[0]}` : ""}! 👋
+                        {getGreeting()}{userName ? `, ${userName.split(" ")[0]}` : ""}!
                     </h1>
                 )}
                 <p className="text-text-secondary mt-1">Aqui está o resumo das suas atividades.</p>

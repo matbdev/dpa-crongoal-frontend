@@ -75,9 +75,9 @@ export default function AddEditRewardPopUp({ onClose, onSuccess, reward }: AddEd
         } catch (error: any) {
             const message = error.response?.data?.errors?.[0]?.message ||
                 error.response?.data?.error ||
-                "Erro ao realizar login";
-            toast.error("Erro ao atualizar/criar a recompensa");
-            console.log(message);
+                "Erro ao processar a requisição";
+            toast.error(message);
+            console.error(error);
         };
     };
 

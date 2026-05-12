@@ -6,6 +6,7 @@ export interface Routine {
     description?: string;
     createdAt?: string;
     userId?: string;
+    routineTasks?: RoutineTask[];
 }
 
 export interface RoutineTask {

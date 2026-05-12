@@ -1,5 +1,5 @@
 import { Routine } from "@/types/routine";
-import { LuCheck, LuPencil, LuTrash2, LuClock, LuRepeat } from "react-icons/lu";
+import { LuPencil, LuTrash2, LuRepeat } from "react-icons/lu";
 import * as RoutineService from "@/services/routine.service";
 import toast from "react-hot-toast";
 import Button from "../ui/Button";
@@ -10,26 +10,10 @@ interface RoutineCardProps {
     routine: Routine;
     onUpdate?: (updatedRoutine: Routine) => void;
     onDelete?: (deletedId: string) => void;
-    onComplete?: (routineId: string) => void;
 }
 
-export default function RoutineCard({ routine, onUpdate, onDelete, onComplete }: RoutineCardProps) {
+export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCardProps) {
     const [isPopUpEditOpen, setIsPopUpEditOpen] = useState(false);
-
-    const handleCompleteRoutine = async () => {
-        try {
-            await RoutineService.updateRoutine(routine.id as string, routine);
-            toast.success("Rotina concluída!");
-            if (onComplete) {
-                onComplete(routine.id as string);
-            }
-        } catch (error: any) {
-            toast.error("Erro ao concluir projeto");
-            console.log(error.response?.data?.errors?.[0]?.message ||
-                error.response?.data?.error ||
-                "Erro ao concluir projeto");
-        };
-    };
 
     const handleUpdateRoutine = (updatedRoutine: Routine) => {
         if (onUpdate) onUpdate(updatedRoutine);
@@ -47,15 +31,15 @@ export default function RoutineCard({ routine, onUpdate, onDelete, onComplete }:
                 if (onDelete) onDelete(routine.id);
             }
         } catch (error: any) {
-            toast.error("Erro ao excluir projeto");
-            console.log(error.response?.data?.errors?.[0]?.message ||
-                error.response?.data?.error ||
-                "Erro ao excluir projeto");
+            const message = error.response?.data?.error ||
+                "Erro ao excluir rotina";
+            toast.error(message);
+            console.error(error);
         };
     };
 
     return (
-        <div className="flex flex-col h-full gap-3 rounded-xl p-5 border transition-all bg-bg-card border-border-card hover:border-accent hover:shadow-md">
+        <div className="flex flex-col gap-3 rounded-xl p-5 border transition-all bg-bg-card border-border-card hover:border-accent hover:shadow-md">
             {isPopUpEditOpen && <AddEditRoutinePopUp
                 onClose={() => { setIsPopUpEditOpen(false) }}
                 onSuccess={(updatedRoutine: Routine) => {
@@ -67,6 +51,12 @@ export default function RoutineCard({ routine, onUpdate, onDelete, onComplete }:
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row items-start justify-between">
                     <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">
+                                <LuRepeat className="inline mr-1" size={12} />
+                                Recorrente
+                            </span>
+                        </div>
                         <h3 className="font-semibold text-lg leading-tight text-text-primary">{routine.name}</h3>
                         {routine.description && (
                             <p className="text-sm mt-1 text-text-secondary">{routine.description}</p>
@@ -76,6 +66,9 @@ export default function RoutineCard({ routine, onUpdate, onDelete, onComplete }:
             </div>
 
             <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-row items-center justify-between gap-2">
+                <div>
+                    <p className="text-sm mt-1 text-text-secondary">Tarefas: {routine.routineTasks?.length || 0}</p>
+                </div>
                 <div className="flex flex-row gap-2">
                     <Button
                         icon={<LuTrash2 />}
@@ -88,12 +81,6 @@ export default function RoutineCard({ routine, onUpdate, onDelete, onComplete }:
                         text="Editar"
                         variant="secondary"
                         onClick={handleEditRoutine}
-                    />
-                    <Button
-                        icon={<LuCheck />}
-                        onClick={handleCompleteRoutine}
-                        text="Concluir"
-                        variant="primary"
                     />
                 </div>
             </div>

@@ -5,6 +5,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import * as RoutineService from "@/services/routine.service";
 import Input from "../ui/Input";
+import TaskSelector from "../tasks/TaskSelector";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,6 +22,9 @@ interface AddEditRoutinePopUpProps {
 
 export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: AddEditRoutinePopUpProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>(
+        routine?.routineTasks?.map(rt => rt.taskId) || []
+    );
 
     const {
         control,
@@ -35,6 +39,11 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
     });
 
     const onSubmit = async (data: RoutineFormInput) => {
+        if (selectedTaskIds.length === 0) {
+            toast.error("Selecione pelo menos uma tarefa para a rotina.");
+            return;
+        }
+
         setIsLoading(true);
         try {
             const finalRoutine: Routine = {
@@ -44,7 +53,7 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
 
             // Edit logic
             if (routine) {
-                const updated = await RoutineService.updateRoutine(routine?.id as string, finalRoutine);
+                const updated = await RoutineService.updateRoutine(routine?.id as string, finalRoutine, selectedTaskIds);
                 toast.success("Rotina atualizada com sucesso!");
 
                 if (onSuccess) {
@@ -55,7 +64,7 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
             } else {
                 // Add logic
 
-                const created = await RoutineService.createRoutine(finalRoutine);
+                const created = await RoutineService.createRoutine(finalRoutine, selectedTaskIds);
                 toast.success("Rotina criada com sucesso!");
 
                 if (onSuccess) {
@@ -68,9 +77,9 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
         } catch (error: any) {
             const message = error.response?.data?.errors?.[0]?.message ||
                 error.response?.data?.error ||
-                "Erro ao realizar login";
-            toast.error("Erro ao atualizar/criar a tarefa");
-            console.log(message);
+                "Erro ao processar a requisição";
+            toast.error(message);
+            console.error(error);
         };
     };
 
@@ -110,6 +119,12 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
                                 )}
                             />
                         </div>
+                        
+                        <TaskSelector 
+                            context="routine" 
+                            selectedTaskIds={selectedTaskIds} 
+                            onSelectionChange={setSelectedTaskIds} 
+                        />
                     </div>
 
                     <div className="flex justify-end flex-row gap-3 mt-4 pt-5 border-t border-border-card">

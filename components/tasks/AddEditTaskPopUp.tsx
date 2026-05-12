@@ -72,15 +72,18 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task }: AddNewTask
         } catch (error: any) {
             const message = error.response?.data?.errors?.[0]?.message ||
                 error.response?.data?.error ||
-                "Erro ao realizar login";
-            toast.error("Erro ao atualizar/criar a tarefa");
-            console.log(message);
+                "Erro ao processar a requisição";
+            toast.error(message);
+            console.error(error);
         };
     };
 
     return (
         <PopUp title={task ? "Editar Tarefa" : "Criar Nova Tarefa"} content={
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={(e) => {
+                e.stopPropagation();
+                handleSubmit(onSubmit)(e);
+            }}>
                 <div className="flex flex-col gap-5 mt-2">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">

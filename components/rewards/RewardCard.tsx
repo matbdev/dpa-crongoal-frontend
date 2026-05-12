@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Button from "../ui/Button";
 import AddNewRewardPopUp from "./AddEditRewardPopUp";
 import { useState } from "react";
+import { usePoints } from "@/contexts/PointsContext";
 
 interface RewardCardProps {
     reward: Reward;
@@ -14,16 +15,24 @@ interface RewardCardProps {
 
 export default function RewardCard({ reward, onUpdate, onDelete }: RewardCardProps) {
     const [isPopUpEditOpen, setIsPopUpEditOpen] = useState(false);
+    const { points, subtractPoints } = usePoints();
 
     const handleRedeemReward = async () => {
+        if (points !== null && points < reward.pointsToGet) {
+            const deficit = reward.pointsToGet - points;
+            toast.error(`Você precisa de mais ${deficit} pontos para resgatar esta recompensa.`);
+            return;
+        }
+
         try {
             await RewardService.redeemReward(reward.id as string);
+            subtractPoints(reward.pointsToGet);
             toast.success("Recompensa resgatada com sucesso!");
         } catch (error: any) {
-            toast.error("Erro ao resgatar recompensa");
-            console.log(error.response?.data?.errors?.[0]?.message ||
-                error.response?.data?.error ||
-                "Erro ao realizar cadastro");
+            const message = error.response?.data?.error ||
+                "Erro ao resgatar recompensa";
+            toast.error(message);
+            console.error(error);
         };
     };
 
@@ -41,15 +50,16 @@ export default function RewardCard({ reward, onUpdate, onDelete }: RewardCardPro
             toast.success("Recompensa excluída com sucesso!");
             if (onDelete) onDelete(reward.id as string);
         } catch (error: any) {
-            toast.error("Erro ao excluir recompensa");
-            console.log(error.response?.data?.errors?.[0]?.message ||
+            const message = error.response?.data?.errors?.[0]?.message ||
                 error.response?.data?.error ||
-                "Erro ao excluir recompensa");
+                "Erro ao excluir recompensa";
+            toast.error(message);
+            console.error(error);
         };
     };
 
     return (
-        <div className={`flex flex-col h-full gap-3 rounded-xl p-5 border transition-all ${reward.isActive ? 'bg-bg-card border-border-card hover:border-accent hover:shadow-md' : 'bg-bg-main border-border-card'}`}>
+        <div className={`flex flex-col gap-3 rounded-xl p-5 border transition-all ${reward.isActive ? 'bg-bg-card border-border-card hover:border-accent hover:shadow-md' : 'bg-bg-main border-border-card'}`}>
             {isPopUpEditOpen && <AddNewRewardPopUp
                 onClose={() => { setIsPopUpEditOpen(false); }}
                 onSuccess={(updatedReward) => {

@@ -21,8 +21,8 @@ export async function getProjectById(id: string): Promise<Project> {
     return response.data;
 }
 
-export async function updateProject(id: string, data: Partial<Project>): Promise<Project> {
-    const response = await api.put(`/api/project/${id}`, data);
+export async function updateProject(id: string, data: Partial<Project>, taskIds?: string[]): Promise<Project> {
+    const response = await api.put(`/api/project/${id}`, { ...data, taskIds });
     return response.data;
 }
 

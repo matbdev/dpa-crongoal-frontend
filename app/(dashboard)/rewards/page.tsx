@@ -42,7 +42,7 @@ export default function RewardsPage() {
                     <Button variant="primary" text="Adicionar Nova" onClick={() => { setIsPopUpAddNewOpen(true); }} icon={<LuPlus />} />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 content-start">
                     {isLoading ? null : rewards.length === 0 ? <CustomEmptyList text="Nenhuma recompensa encontrada" secondaryText="Cadastre uma nova recompensa para começar" /> : rewards.map(reward => (
                         <RewardCard
                             key={reward.id || reward.title}

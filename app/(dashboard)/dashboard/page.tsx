@@ -12,6 +12,7 @@ import { Project } from "@/types/project";
 import { DailyRegister } from "@/types/task";
 import { User } from "@/types/user";
 import { LuSquareCheck, LuFolderOpen, LuRepeat, LuGift, LuCoins, LuTicket, LuCalendarClock, LuClipboardCheck, LuFlame, LuChartBar } from "react-icons/lu";
+import { usePoints } from "@/contexts/PointsContext";
 
 // Helper: greeting based on time of day
 function getGreeting(): string {
@@ -73,9 +74,9 @@ export default function DashboardPage() {
         projects: 0,
         routines: 0,
         rewards: 0,
-        redeems: 0,
-        points: 0
+        redeems: 0
     });
+    const { points } = usePoints();
     const [userName, setUserName] = useState("");
     const [upcomingProjects, setUpcomingProjects] = useState<Project[]>([]);
     const [recentDaily, setRecentDaily] = useState<DailyRegister[]>([]);
@@ -112,8 +113,7 @@ export default function DashboardPage() {
                     projects,
                     routines,
                     rewards,
-                    redeems: redeems.length,
-                    points: profile.pointsBalance ?? 0
+                    redeems: redeems.length
                 });
 
                 setUserName(profile.displayName || profile.fullName || "");
@@ -190,7 +190,7 @@ export default function DashboardPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                         <DashboardCard
                             title="Saldo de Pontos"
-                            value={counts.points}
+                            value={points !== null ? points : "..."}
                             icon={<LuCoins size={24} className="text-warning" />}
                             colorClass="bg-warning/10"
                         />

@@ -21,8 +21,8 @@ export async function getRoutineById(id: string): Promise<Routine> {
     return response.data;
 }
 
-export async function updateRoutine(id: string, data: Partial<Routine>): Promise<Routine> {
-    const response = await api.put(`/api/routine/${id}`, data);
+export async function updateRoutine(id: string, data: Partial<Routine>, taskIds?: string[]): Promise<Routine> {
+    const response = await api.put(`/api/routine/${id}`, { ...data, taskIds });
     return response.data;
 }
 

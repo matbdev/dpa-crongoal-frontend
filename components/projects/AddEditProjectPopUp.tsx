@@ -1,18 +1,16 @@
 import PopUp from "../layout/PopUp";
 import Button from "../ui/Button";
 import Label from "../ui/Label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import * as ProjectService from "@/services/project.service";
-import * as TaskService from "@/services/task.service";
 import Input from "../ui/Input";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Project } from "@/types/project";
 import { createProjectSchema } from "@/schemas/project.schema";
-import { Task } from "@/types/task";
-import { LuPlus } from "react-icons/lu";
+import TaskSelector from "../tasks/TaskSelector";
 
 type ProjectFormInput = z.input<typeof createProjectSchema>;
 
@@ -24,20 +22,9 @@ interface AddNewProjectPopUpProps {
 
 export default function AddNewProjectPopUp({ onClose, onSuccess, project }: AddNewProjectPopUpProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [isTaskPopUpOpen, setIsTaskPopUpOpen] = useState(false);
-
-    useEffect(() => {
-        TaskService.getTasks()
-            .then(data => {
-                setTasks(data);
-                setIsLoading(false);
-            })
-            .catch(error => {
-                console.error("Erro ao buscar tarefas", error);
-                setIsLoading(false);
-            });
-    }, []);
+    const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>(
+        project?.tasks?.map(t => t.id as string) || []
+    );
 
     const {
         control,
@@ -53,6 +40,11 @@ export default function AddNewProjectPopUp({ onClose, onSuccess, project }: AddN
     });
 
     const onSubmit = async (data: ProjectFormInput) => {
+        if (selectedTaskIds.length === 0) {
+            toast.error("Selecione pelo menos uma tarefa para o projeto.");
+            return;
+        }
+
         setIsLoading(true);
         try {
             const finalProject: Project = {
@@ -63,7 +55,7 @@ export default function AddNewProjectPopUp({ onClose, onSuccess, project }: AddN
 
             // Edit logic
             if (project) {
-                const updated = await ProjectService.updateProject(project?.id as string, finalProject);
+                const updated = await ProjectService.updateProject(project?.id as string, finalProject, selectedTaskIds);
                 toast.success("Projeto atualizado com sucesso!");
 
                 if (onSuccess) {
@@ -73,7 +65,7 @@ export default function AddNewProjectPopUp({ onClose, onSuccess, project }: AddN
                 };
             } else {
                 // Add logic
-                const created = await ProjectService.createProject(finalProject);
+                const created = await ProjectService.createProject(finalProject, selectedTaskIds);
                 toast.success("Projeto criado com sucesso!");
 
                 if (onSuccess) {
@@ -87,8 +79,8 @@ export default function AddNewProjectPopUp({ onClose, onSuccess, project }: AddN
             const message = error.response?.data?.errors?.[0]?.message ||
                 error.response?.data?.error ||
                 "Erro ao processar a requisição";
-            toast.error("Erro ao atualizar/criar o projeto");
-            console.log(message);
+            toast.error(message);
+            console.error(error);
         } finally {
             setIsLoading(false);
         }
@@ -155,21 +147,14 @@ export default function AddNewProjectPopUp({ onClose, onSuccess, project }: AddN
                         {/* Tasks panel */}
                         <div className="flex flex-row gap-4">
                             <div className="flex flex-col gap-1.5 flex-1">
-                                <Label text="Tarefas" />
-                                <div className="flex flex-col gap-2 bg-surface/20 rounded-md px-4 py-2">
-                                    <div className="flex flex-row justify-end w-full">
-                                        <Button icon={<LuPlus />} text="Adicionar Tarefa" variant="outline"/>
-                                    </div>
-                                    <div className="flex flex-col gap-6">
-                                        <div className="grid grid-cols-2 xl:grid-cols-3 gap-4"></div>
-                                            {tasks.map(task => (
-                                                <div className="bg-surface rounded-md px-4 py-2">{task.title || task.id}</div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                                <TaskSelector
+                                    context="project"
+                                    selectedTaskIds={selectedTaskIds}
+                                    onSelectionChange={setSelectedTaskIds}
+                                />
                             </div>
                         </div>
+                    </div>
 
                     <div className="flex justify-end flex-row gap-3 mt-4 pt-5 border-t border-border-card">
                         <Button variant="cancel" text="Cancelar" onClick={onClose} type="button" disabled={isLoading} />

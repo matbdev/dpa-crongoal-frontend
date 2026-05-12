@@ -4,8 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import { LuLogIn, LuUserPlus, LuCoins } from "react-icons/lu";
 import ToggleMode from "../ui/ToggleMode";
 import Link from "next/link";
-import { getProfile } from "../../services/user.service";
-import { useEffect, useState } from "react";
+import { usePoints } from "@/contexts/PointsContext";
 
 interface NavbarProps {
     showLogin?: boolean;
@@ -15,13 +14,7 @@ interface NavbarProps {
 
 export default function Navbar({ showLogin = true, showRegister = true, showUserPoints = false }: NavbarProps) {
     const showAuthButtons = showLogin || showRegister;
-    const [points, setPoints] = useState<number | null>(null);
-
-    useEffect(() => {
-        if (showUserPoints) {
-            getProfile().then((user) => setPoints(user.pointsBalance ?? 0)).catch(() => { });
-        }
-    }, [showUserPoints]);
+    const { points } = usePoints();
 
     return (
         <nav className="flex sticky top-0 z-10 flex-row items-center justify-between px-6 py-3 border-b border-border-card bg-bg-card/50 backdrop-blur-sm">

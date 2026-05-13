@@ -127,8 +127,6 @@ The application will be available at `http://localhost:3000`.
 - [x] **Phase 6:** Kanban Board visual implementation
 - [ ] **Phase 7:** Advanced drag-and-drop mechanics for Kanban
 - [ ] **Phase 8:** Comprehensive test coverage (Jest / Cypress)
-- [ ] **Phase 9:** PWA Setup & offline support
-- [ ] **Phase 10:** Light/Dark theme final polish
 
 ---
 **If you like what you see here, give it a ⭐️ and follow me for future updates and projects!**

@@ -84,12 +84,12 @@ export default function DashboardPage() {
     const [weeklyData, setWeeklyData] = useState<number[]>(new Array(7).fill(0));
     const [isLoading, setIsLoading] = useState(true);
 
-    // Handle Google OAuth callback: extract token from URL and save to localStorage
+    // Callback do Google OAuth
     useEffect(() => {
         const accessToken = searchParams.get("accessToken");
         if (accessToken) {
             localStorage.setItem("token", accessToken);
-            // Clean the URL to remove the token from the address bar / browser history
+            // Limpa o token da URL
             router.replace("/dashboard");
         }
     }, [searchParams, router]);
@@ -118,7 +118,7 @@ export default function DashboardPage() {
 
                 setUserName(profile.displayName || profile.fullName || "");
 
-                // Sort projects by limitDate (nearest first), only future ones
+                // Próximos projetos (futuros)
                 const now = new Date();
                 const upcoming = allProjects
                     .filter(p => new Date(p.limitDate) > now)
@@ -126,16 +126,16 @@ export default function DashboardPage() {
                     .slice(0, 4);
                 setUpcomingProjects(upcoming);
 
-                // Most recent daily registers (last 5)
+                // Últimos registros diários
                 const sorted = [...dailyTasks]
                     .sort((a, b) => new Date(b.registerDate ?? 0).getTime() - new Date(a.registerDate ?? 0).getTime())
                     .slice(0, 5);
                 setRecentDaily(sorted);
 
-                // Today's progress
+                // Progresso do dia
                 setTodayProgress(getTodayProgress(dailyTasks));
 
-                // Weekly chart data
+                // Gráfico semanal
                 setWeeklyData(getWeeklyCompletions(dailyTasks));
 
             } catch (error) {

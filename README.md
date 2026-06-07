@@ -25,9 +25,12 @@ This repository houses the Frontend Web UI of the CronGoal ecosystem. Built on t
 
 ## Core Features
 - **Interactive Dashboard:** A centralized view of your progress, upcoming tasks, and quick actions.
-- **Dynamic Kanban Board:** Visually manage your project tasks with a flexible column structure.
-- **Routine & Task Management:** Easily create, update, and track daily routines and specific tasks through intuitive pop-ups and cards.
-- **Gamification Interface:** Engaging UI for tracking points (`PointsContext`) and redeeming rewards to boost daily consistency and habit building.
+- **Dynamic Kanban Board:** Visually manage your project tasks with a flexible column structure and native drag-and-drop support.
+- **Routine & Task Management:** Easily create, update, and track daily routines with custom periodicities (daily, weekly, monthly, etc.) and specific tasks.
+- **Project Lifecycles:** Overdue project tracking with automatic penalty logic (half points) and completed state validation.
+- **Gamification Interface:** Engaging UI for tracking points (`PointsContext`), viewing history, and redeeming rewards.
+- **Visual Progress Charts:** Interactive charts for visualizing user performance, habit streak updates, and task completion trends.
+- **PDF/CSV Report Generation:** Export comprehensive, filtered reports for tasks, projects, routines, and rewards using a programmatic layout.
 - **Secure Access & Auth Guards:** Protected routes and a seamless authentication flow that integrates natively with the backend API.
 - **Responsive Design:** Fully responsive layout built with modern CSS practices for both desktop and mobile views.
 
@@ -125,8 +128,9 @@ The application will be available at `http://localhost:3000`.
 - [x] **Phase 4:** API Service abstractions and Context providers setup
 - [x] **Phase 5:** Core domain pages (Dashboard, Projects, Tasks, Routines, Rewards)
 - [x] **Phase 6:** Kanban Board visual implementation
-- [ ] **Phase 7:** Advanced drag-and-drop mechanics for Kanban
-- [ ] **Phase 8:** Comprehensive test coverage (Jest / Cypress)
+- [x] **Phase 7:** Advanced drag-and-drop mechanics for Kanban
+- [x] **Phase 8:** Interactive progress charts and analytics dashboard
+- [x] **Phase 9:** Programmatic PDF/CSV report generation system with filters
 
 ---
 **If you like what you see here, give it a ⭐️ and follow me for future updates and projects!**

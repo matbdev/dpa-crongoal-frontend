@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const createRoutineSchema = z.object({
     name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
     description: z.string().optional(),
+    period: z.enum(['DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'SEMIANNUAL', 'ANNUAL']).optional().default('DAILY'),
 });
 
 export const updateRoutineSchema = createRoutineSchema.partial();

@@ -34,7 +34,8 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
         resolver: zodResolver(createRoutineSchema),
         defaultValues: {
             name: routine?.name || "",
-            description: routine?.description || ""
+            description: routine?.description || "",
+            period: routine?.period || "DAILY"
         },
     });
 
@@ -48,7 +49,8 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
         try {
             const finalRoutine: Routine = {
                 name: data.name,
-                description: data.description
+                description: data.description,
+                period: data.period
             };
 
             // Edit logic
@@ -116,6 +118,28 @@ export default function AddEditRoutinePopUp({ onClose, onSuccess, routine }: Add
                                         placeholder="Descreva como e quando será a rotina..."
                                         error={errors.description?.message}
                                     />
+                                )}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="routine-period" text="Ciclo de Repetição" />
+                            <Controller
+                                name="period"
+                                control={control}
+                                render={({ field }) => (
+                                    <select
+                                        {...field}
+                                        id="routine-period"
+                                        className="px-3 py-2 text-sm rounded-lg border border-border-card bg-bg-main text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                                    >
+                                        <option value="DAILY">Diário</option>
+                                        <option value="WEEKLY">Semanal</option>
+                                        <option value="MONTHLY">Mensal</option>
+                                        <option value="QUARTERLY">Trimestral</option>
+                                        <option value="SEMIANNUAL">Semestral</option>
+                                        <option value="ANNUAL">Anual</option>
+                                    </select>
                                 )}
                             />
                         </div>

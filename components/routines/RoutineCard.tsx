@@ -54,7 +54,13 @@ export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCard
                         <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">
                                 <LuRepeat className="inline mr-1" size={12} />
-                                Recorrente
+                                {routine.period === 'DAILY' && 'Diário'}
+                                {routine.period === 'WEEKLY' && 'Semanal'}
+                                {routine.period === 'MONTHLY' && 'Mensal'}
+                                {routine.period === 'QUARTERLY' && 'Trimestral'}
+                                {routine.period === 'SEMIANNUAL' && 'Semestral'}
+                                {routine.period === 'ANNUAL' && 'Anual'}
+                                {!routine.period && 'Recorrente'}
                             </span>
                         </div>
                         <h3 className="font-semibold text-lg leading-tight text-text-primary">{routine.name}</h3>

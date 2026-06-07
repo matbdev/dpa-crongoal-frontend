@@ -24,10 +24,12 @@ export default function TasksPage() {
     useEffect(() => {
         getTasks()
             .then((allTasks) => {
-                const filteredTasks = allTasks.filter(task => task.type === 'UNIQUE');
+                const filteredTasks = allTasks.filter(task => 
+                    !task.projectId && (!task.routineTasks || task.routineTasks.length === 0)
+                );
                 setTasks(filteredTasks);
-            }
-            ).finally(() => setIsLoading(false));
+            })
+            .finally(() => setIsLoading(false));
     }, []);
 
     return (

@@ -11,8 +11,9 @@ import { getProfile } from "@/services/user.service";
 import { Project } from "@/types/project";
 import { DailyRegister } from "@/types/task";
 import { User } from "@/types/user";
-import { LuSquareCheck, LuFolderOpen, LuRepeat, LuGift, LuCoins, LuTicket, LuCalendarClock, LuClipboardCheck, LuFlame, LuChartBar } from "react-icons/lu";
+import { LuSquareCheck, LuFolderOpen, LuRepeat, LuGift, LuCoins, LuTicket, LuCalendarClock, LuClipboardCheck, LuFlame, LuChartBar, LuChartPie, LuFileText } from "react-icons/lu";
 import { usePoints } from "@/contexts/PointsContext";
+import ReportModal from "@/components/reports/ReportModal";
 
 // Helper: greeting based on time of day
 function getGreeting(): string {
@@ -82,7 +83,9 @@ export default function DashboardPage() {
     const [recentDaily, setRecentDaily] = useState<DailyRegister[]>([]);
     const [todayProgress, setTodayProgress] = useState({ done: 0, total: 0 });
     const [weeklyData, setWeeklyData] = useState<number[]>(new Array(7).fill(0));
+    const [projectStatus, setProjectStatus] = useState({ completed: 0, active: 0, total: 0 });
     const [isLoading, setIsLoading] = useState(true);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
     // Callback do Google OAuth
     useEffect(() => {
@@ -138,6 +141,15 @@ export default function DashboardPage() {
                 // Gráfico semanal
                 setWeeklyData(getWeeklyCompletions(dailyTasks));
 
+                // Project Status
+                const totalProj = allProjects.length;
+                const completedProj = allProjects.filter(p => p.isCompleted).length;
+                setProjectStatus({
+                    completed: completedProj,
+                    active: totalProj - completedProj,
+                    total: totalProj
+                });
+
             } catch (error) {
                 console.error("Failed to fetch dashboard:", error);
             } finally {
@@ -167,16 +179,27 @@ export default function DashboardPage() {
     return (
         <div className="p-8 flex flex-col gap-8">
             {/* Header with personalized greeting */}
-            <div>
-                {isLoading ? (
-                    <div className="h-8 w-64 rounded-lg bg-bg-card animate-pulse"></div>
-                ) : (
-                    <h1 className="text-2xl font-bold text-text-primary">
-                        {getGreeting()}{userName ? `, ${userName.split(" ")[0]}` : ""}!
-                    </h1>
-                )}
-                <p className="text-text-secondary mt-1">Aqui está o resumo das suas atividades.</p>
+            <div className="flex items-start justify-between">
+                <div>
+                    {isLoading ? (
+                        <div className="h-8 w-64 rounded-lg bg-bg-card animate-pulse"></div>
+                    ) : (
+                        <h1 className="text-2xl font-bold text-text-primary">
+                            {getGreeting()}{userName ? `, ${userName.split(" ")[0]}` : ""}!
+                        </h1>
+                    )}
+                    <p className="text-text-secondary mt-1">Aqui está o resumo das suas atividades.</p>
+                </div>
+                <button
+                    onClick={() => setIsReportModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border-card bg-bg-card text-text-primary hover:border-accent hover:text-accent transition-colors text-sm font-medium"
+                >
+                    <LuFileText size={16} />
+                    Relatórios
+                </button>
             </div>
+
+            <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} module="all" />
 
             {/* Summary Cards */}
             {isLoading ? (
@@ -230,8 +253,8 @@ export default function DashboardPage() {
                         />
                     </div>
 
-                    {/* Today's Progress + Weekly Chart */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Today's Progress + Weekly Chart + Project Status */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Today's Progress */}
                         <div className="rounded-2xl border border-border-card bg-bg-card p-6">
                             <div className="flex items-center gap-2 mb-5">
@@ -300,6 +323,55 @@ export default function DashboardPage() {
                                     );
                                 })}
                             </div>
+                        </div>
+
+                        {/* Project Status Chart */}
+                        <div className="rounded-2xl border border-border-card bg-bg-card p-6">
+                            <div className="flex items-center gap-2 mb-5">
+                                <LuChartPie size={20} className="text-secondary" />
+                                <h2 className="text-lg font-semibold text-text-primary">Status dos Projetos</h2>
+                            </div>
+
+                            {projectStatus.total === 0 ? (
+                                <p className="text-sm text-text-secondary">Nenhum projeto encontrado.</p>
+                            ) : (
+                                <div className="flex items-center justify-between h-36">
+                                    {/* Donut Chart */}
+                                    <div className="relative w-28 h-28 flex items-center justify-center">
+                                        <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                                            {/* Background circle */}
+                                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--color-bg-main)" strokeWidth="12" />
+                                            {/* Foreground circle */}
+                                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--color-success)" strokeWidth="12"
+                                                strokeDasharray="251.2"
+                                                strokeDashoffset={251.2 - ((projectStatus.completed / projectStatus.total) * 100 / 100) * 251.2}
+                                                strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+                                        </svg>
+                                        <div className="absolute flex flex-col items-center">
+                                            <span className="text-xl font-bold text-text-primary">{projectStatus.total}</span>
+                                            <span className="text-[10px] text-text-secondary uppercase">Total</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Legend */}
+                                    <div className="flex flex-col gap-3 flex-1 ml-6">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full bg-success"></div>
+                                                <span className="text-sm text-text-secondary">Concluídos</span>
+                                            </div>
+                                            <span className="text-sm font-semibold text-text-primary">{projectStatus.completed}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full bg-bg-main border border-border-card"></div>
+                                                <span className="text-sm text-text-secondary">Ativos</span>
+                                            </div>
+                                            <span className="text-sm font-semibold text-text-primary">{projectStatus.active}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

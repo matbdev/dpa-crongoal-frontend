@@ -6,8 +6,9 @@ import KanbanBoard, { KanbanColumnDef } from "@/components/ui/KanbanBoard";
 import Button from "@/components/ui/Button";
 import CustomEmptyList from "@/components/ui/CustomEmptyList";
 import { Task } from "@/types/task";
-import { LuPlus, LuLayoutGrid, LuSquareKanban } from "react-icons/lu";
+import { LuPlus, LuLayoutGrid, LuSquareKanban, LuFileText } from "react-icons/lu";
 import { useState } from "react";
+import ReportModal from "@/components/reports/ReportModal";
 
 interface TasksPageBaseProps {
     title?: string;
@@ -34,12 +35,13 @@ export default function TasksPageBase({
 }: TasksPageBaseProps) {
     const [isPopUpAddNewOpen, setIsPopUpAddNewOpen] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('kanban');
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-    // Define columns placing all tasks in the first column for now
+    // Define columns placing tasks based on completion status
     const kanbanColumns: KanbanColumnDef<Task>[] = [
-        { id: "todo", title: "A Fazer", items: pageTasks },
+        { id: "todo", title: "A Fazer", items: pageTasks.filter(t => !t.isCompleted) },
         { id: "in_progress", title: "Em Andamento", items: [] },
-        { id: "done", title: "Concluído", items: [] },
+        { id: "done", title: "Concluído", items: pageTasks.filter(t => t.isCompleted) },
     ];
 
     return (
@@ -77,8 +79,19 @@ export default function TasksPageBase({
                             </button>
                         </div>
                     </div>
-                    <Button variant="primary" text="Adicionar Nova" onClick={() => { setIsPopUpAddNewOpen(true); }} icon={<LuPlus />} />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsReportModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-md border border-border-card bg-bg-card text-text-primary hover:border-accent hover:text-accent transition-colors text-sm font-medium"
+                        >
+                            <LuFileText size={16} />
+                            Relatório
+                        </button>
+                        <Button variant="primary" text="Nova Tarefa" onClick={() => { setIsPopUpAddNewOpen(true); }} icon={<LuPlus />} />
+                    </div>
                 </div>
+
+                <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} module="tasks" />
 
                 <div className="flex-1 overflow-hidden">
                     {isLoading ? null : pageTasks.length === 0 ? (
@@ -99,6 +112,15 @@ export default function TasksPageBase({
                         <KanbanBoard<Task>
                             columns={kanbanColumns}
                             emptyText="Nenhuma tarefa"
+                            getId={(task) => task.id as string}
+                            isItemDraggable={(task) => !task.isCompleted}
+                            onItemMove={async (taskId, sourceColId, destColId) => {
+                                if (destColId === 'done' && handleCompleteTask) {
+                                    handleCompleteTask(taskId);
+                                } else if (destColId !== 'done') {
+                                    // Normally we would save column state, but for now we only have basic status
+                                }
+                            }}
                             renderCard={(task) => (
                                 <TaskCard
                                     key={task.id || task.title}

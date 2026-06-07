@@ -43,16 +43,6 @@ export default function Sidebar() {
             icon: FaAward,
         },
         {
-            label: "Configurações",
-            href: "/settings",
-            icon: LuSettings,
-        },
-        {
-            label: "Perfil",
-            href: "/profile",
-            icon: LuUser,
-        },
-        {
             label: "Sair",
             href: "/",
             icon: LuLogOut,
@@ -74,7 +64,7 @@ export default function Sidebar() {
             {/* Sidebar items */}
             <nav className="p-2">
                 <ul>
-                    {menuItems.slice(0, -3).map((item) => (
+                    {menuItems.slice(0, -1).map((item) => (
                         <li key={item.label}>
                             <SidebarButton item={item} isCollapsed={isCollapsed} />
                         </li>
@@ -85,7 +75,7 @@ export default function Sidebar() {
             {/* Sidebar footer */}
             <div className="p-2 mt-auto">
                 <ul>
-                    {menuItems.slice(-3).map((item) => (
+                    {menuItems.slice(-1).map((item) => (
                         <li key={item.label}>
                             <SidebarButton item={item} isCollapsed={isCollapsed} />
                         </li>

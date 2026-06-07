@@ -1,10 +1,13 @@
 "use client"
 
 import { FaGithub } from "react-icons/fa";
-import { LuLogIn, LuUserPlus, LuCoins } from "react-icons/lu";
+import { LuLogIn, LuUserPlus, LuCoins, LuUser } from "react-icons/lu";
 import ToggleMode from "../ui/ToggleMode";
 import Link from "next/link";
 import { usePoints } from "@/contexts/PointsContext";
+import { useEffect, useState } from "react";
+import { User } from "@/types/user";
+import { getProfile } from "@/services/user.service";
 
 interface NavbarProps {
     showLogin?: boolean;
@@ -15,6 +18,15 @@ interface NavbarProps {
 export default function Navbar({ showLogin = true, showRegister = true, showUserPoints = false }: NavbarProps) {
     const showAuthButtons = showLogin || showRegister;
     const { points } = usePoints();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        if (!showAuthButtons) {
+            getProfile()
+                .then(setUser)
+                .catch(() => setUser(null));
+        }
+    }, [showAuthButtons]);
 
     return (
         <nav className="flex sticky top-0 z-10 flex-row items-center justify-between px-6 py-3 border-b border-border-card bg-bg-card/50 backdrop-blur-sm">
@@ -48,6 +60,24 @@ export default function Navbar({ showLogin = true, showRegister = true, showUser
                 >
                     <FaGithub size={20} />
                 </Link>
+
+                {!showAuthButtons && (
+                    <Link
+                        href="/profile"
+                        className="ml-2 flex items-center justify-center h-9 w-9 rounded-full border-2 border-border-card hover:border-accent transition-all overflow-hidden bg-hover-sidebar"
+                        title="Meu Perfil"
+                    >
+                        {user?.picUrl ? (
+                            <img
+                                src={user.picUrl}
+                                alt={user.fullName || "Usuário"}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <LuUser size={20} className="text-text-secondary" />
+                        )}
+                    </Link>
+                )}
 
                 {showAuthButtons && (
                     <>

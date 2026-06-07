@@ -7,7 +7,7 @@ export async function getProfile(): Promise<User> {
 }
 
 export async function updateProfile(data: Partial<User>): Promise<User> {
-    const response = await api.put('/api/user', { body: data });
+    const response = await api.put('/api/user', data);
     return response.data;
 }
 

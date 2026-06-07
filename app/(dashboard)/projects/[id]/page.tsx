@@ -1,11 +1,18 @@
 "use client";
 
 import TasksPageBase from "@/components/tasks/TaskPageBase";
-import { getTasks } from "@/services/task.service";
+import { getProjectById } from "@/services/project.service";
+import { Project } from "@/types/project";
 import { Task } from "@/types/task";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
-export default function TasksPage() {
+interface PageProps {
+    params: Promise<{ id: string }>;
+}
+
+export default function ProjectTasks({ params }: PageProps) {
+    const { id } = use(params);
+    const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     
@@ -22,16 +29,20 @@ export default function TasksPage() {
     };
 
     useEffect(() => {
-        getTasks()
-            .then((allTasks) => {
-                const filteredTasks = allTasks.filter(task => task.type === 'UNIQUE');
-                setTasks(filteredTasks);
-            }
-            ).finally(() => setIsLoading(false));
-    }, []);
+        getProjectById(id)
+            .then((foundProject) => {
+                setProject(foundProject);
+                setTasks(foundProject.tasks || []);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, [id]);
 
     return (
         <TasksPageBase
+            title={`Tarefas do projeto ${project?.title}`}
+            subtitle={project?.description}
             pageTasks={tasks}
             setPageTasks={setTasks}
             isLoading={isLoading}

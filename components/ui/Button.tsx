@@ -8,7 +8,7 @@ export type ButtonVariant = "primary" | "secondary" | "cancel" | "google" | "out
 
 interface ButtonProps {
     text?: string;
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
     icon?: ReactNode;
     href?: string;
     variant?: ButtonVariant;

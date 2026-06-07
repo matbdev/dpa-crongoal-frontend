@@ -1,3 +1,5 @@
+"use client";
+
 import { Project } from "@/types/project";
 import { LuPencil, LuTrash2, LuCalendar } from "react-icons/lu";
 import * as ProjectService from "@/services/project.service";
@@ -5,6 +7,7 @@ import toast from "react-hot-toast";
 import Button from "../ui/Button";
 import { useState } from "react";
 import AddNewProjectPopUp from "./AddEditProjectPopUp";
+import { useRouter } from "next/navigation";
 
 interface ProjectCardProps {
     project: Project;
@@ -13,18 +16,17 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, onUpdate, onDelete }: ProjectCardProps) {
+    const router = useRouter();
     const [isPopUpEditOpen, setIsPopUpEditOpen] = useState(false);
     const isCompleted = project.isCompleted ?? false;
 
-    const handleUpdateProject = (updatedProject: Project) => {
-        if (onUpdate) onUpdate(updatedProject);
-    };
-
-    const handleEditProject = () => {
+    const handleEditProject = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevents the card's onClick from firing
         setIsPopUpEditOpen(true);
     };
 
-    const handleDeleteProject = async () => {
+    const handleDeleteProject = async (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevents the card's onClick from firing
         try {
             if (project.id) {
                 await ProjectService.deleteProject(project.id);
@@ -39,11 +41,19 @@ export default function ProjectCard({ project, onUpdate, onDelete }: ProjectCard
         };
     };
 
+    const handleUpdateProject = (updatedProject: Project) => {
+        if (onUpdate) onUpdate(updatedProject);
+    };
+
+    const handleCardClick = () => {
+        router.push(`/projects/${project.id}`); // Adjust this URL path to match your app
+    };
+
     const completedTasks = project.tasks?.filter(t => t.isCompleted).length ?? 0;
     const totalTasks = project.tasks?.length ?? 0;
 
     return (
-        <div className={`flex flex-col gap-3 rounded-xl p-5 border transition-all bg-bg-card border-border-card hover:border-accent hover:shadow-md ${isCompleted ? 'opacity-60' : ''}`}>
+        <div onClick={() => handleCardClick()} className={`flex flex-col gap-3 rounded-xl p-5 border transition-all bg-bg-card border-border-card hover:border-accent hover:shadow-md ${isCompleted ? 'opacity-60' : ''}`}>
             {isPopUpEditOpen && <AddNewProjectPopUp
                 onClose={() => { setIsPopUpEditOpen(false) }}
                 onSuccess={(updatedProject: Project) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
-import { LuPlus, LuLayoutGrid, LuSquareKanban } from "react-icons/lu";
+import { LuPlus, LuLayoutGrid, LuSquareKanban, LuFileText } from "react-icons/lu";
 import ProjectCard from "@/components/projects/ProjectCard";
 import KanbanBoard, { KanbanColumnDef } from "@/components/ui/KanbanBoard";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import * as ProjectService from "@/services/project.service";
 import { Project } from "@/types/project";
 import AddNewProjectPopUp from "@/components/projects/AddEditProjectPopUp";
 import CustomEmptyList from "@/components/ui/CustomEmptyList";
+import ReportModal from "@/components/reports/ReportModal";
 
 export default function ProjectsPage() {
 
@@ -16,6 +17,8 @@ export default function ProjectsPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('kanban');
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'overdue'>('active');
 
     useEffect(() => {
         ProjectService.getProjects().then(setProjects).finally(() => setIsLoading(false));
@@ -31,6 +34,15 @@ export default function ProjectsPage() {
         setProjects(currentProjects => currentProjects.filter(project => project.id !== deletedId));
     };
 
+    const now = new Date();
+    const filteredProjects = projects.filter(project => {
+        const isOverdue = new Date(project.limitDate) < now && !project.isCompleted;
+        
+        if (activeTab === 'completed') return project.isCompleted;
+        if (activeTab === 'overdue') return isOverdue;
+        return !project.isCompleted && !isOverdue;
+    });
+
     return (
         <div className="p-8 h-[calc(100vh-80px)] flex flex-col">
             {isPopUpOpen && <AddNewProjectPopUp
@@ -45,16 +57,52 @@ export default function ProjectsPage() {
                 <div className="flex flex-row items-center justify-between">
                     <div className="flex items-center gap-6">
                         <h1 className="text-2xl font-semibold text-text-primary">Projetos</h1>
+                        
+                        {/* Tabs */}
+                        <div className="flex items-center bg-bg-card border border-border-card rounded-lg p-1">
+                            <button
+                                onClick={() => setActiveTab('active')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'active' ? 'bg-bg-main text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                Em Andamento
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('completed')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'completed' ? 'bg-bg-main text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                Concluídos
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('overdue')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'overdue' ? 'bg-bg-main text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                Vencidos
+                            </button>
+                        </div>
                     </div>
-                    <Button text="Novo Projeto" variant="primary" icon={<LuPlus />} onClick={() => setIsPopUpOpen(true)} />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsReportModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-md border border-border-card bg-bg-card text-text-primary hover:border-accent hover:text-accent transition-colors text-sm font-medium"
+                        >
+                            <LuFileText size={16} />
+                            Relatório
+                        </button>
+                        <Button text="Novo Projeto" variant="primary" icon={<LuPlus />} onClick={() => setIsPopUpOpen(true)} />
+                    </div>
                 </div>
 
+                <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} module="projects" />
+
                 <div className="flex-1 overflow-hidden">
-                    {isLoading ? null : projects.length === 0 ? (
-                        <CustomEmptyList text="Nenhum projeto encontrado" secondaryText="Cadastre um novo projeto para começar" />
+                    {isLoading ? null : filteredProjects.length === 0 ? (
+                        <CustomEmptyList 
+                            text={activeTab === 'active' ? "Nenhum projeto em andamento" : activeTab === 'completed' ? "Nenhum projeto concluído" : "Nenhum projeto vencido"} 
+                            secondaryText={activeTab === 'active' ? "Cadastre um novo projeto para começar" : ""} 
+                        />
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 overflow-y-auto pr-2 pb-8 h-full content-start">
-                            {projects.map(project => (
+                            {filteredProjects.map(project => (
                                 <ProjectCard
                                     key={project.id}
                                     project={project}

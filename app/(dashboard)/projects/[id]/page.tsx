@@ -24,8 +24,17 @@ export default function ProjectTasks({ params }: PageProps) {
         setTasks(prev => prev.filter(r => r.id !== deletedId))
     };
 
-    const handleCompleteTask = (taskId: string) => {
-        // Task stays visible — the TaskCard handles its own completion UI
+    const handleCompleteTask = async (taskId: string) => {
+        try {
+            // Task is completed. The backend handles points logic (awarding points, checking overdue etc)
+            // But we need to update the local state to show it in the 'done' column.
+            const { createDailyRegister } = await import('@/services/task.service');
+            await createDailyRegister({ taskId, isDone: true });
+            
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: true } : t));
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     useEffect(() => {

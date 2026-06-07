@@ -7,12 +7,14 @@ import CustomEmptyList from "@/components/ui/CustomEmptyList";
 import AddEditRoutinePopUp from "@/components/routines/AddEditRoutinePopUp";
 import RoutineCard from "@/components/routines/RoutineCard";
 import Button from "@/components/ui/Button";
-import { LuPlus } from "react-icons/lu";
+import { LuPlus, LuFileText } from "react-icons/lu";
+import ReportModal from "@/components/reports/ReportModal";
 
 export default function RoutinesPage() {
     const [routines, setRoutines] = useState<Routine[]>([]);
     const [isPopUpAddNewOpen, setIsPopUpAddNewOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
     useEffect(() => {
         getRoutines().then(setRoutines).finally(() => setIsLoading(false));
@@ -41,8 +43,19 @@ export default function RoutinesPage() {
                     <div className="flex items-center gap-6">
                         <h1 className="text-2xl font-semibold text-text-primary">Rotinas</h1>
                     </div>
-                    <Button variant="primary" text="Adicionar Nova" onClick={() => { setIsPopUpAddNewOpen(true); }} icon={<LuPlus />} />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsReportModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-md border border-border-card bg-bg-card text-text-primary hover:border-accent hover:text-accent transition-colors text-sm font-medium"
+                        >
+                            <LuFileText size={16} />
+                            Relatório
+                        </button>
+                        <Button variant="primary" text="Adicionar Nova" onClick={() => { setIsPopUpAddNewOpen(true); }} icon={<LuPlus />} />
+                    </div>
                 </div>
+
+                <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} module="routines" />
 
                 <div className="flex-1 overflow-hidden">
                     {isLoading ? null : routines.length === 0 ? (

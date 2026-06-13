@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Button from "../ui/Button";
 import { useState } from "react";
 import AddNewProjectPopUp from "./AddEditProjectPopUp";
+import ConfirmDeleteModal from "../ui/ConfirmDeleteModal";
 import { useRouter } from "next/navigation";
 
 interface ProjectCardProps {
@@ -18,6 +19,7 @@ interface ProjectCardProps {
 export default function ProjectCard({ project, onUpdate, onDelete }: ProjectCardProps) {
     const router = useRouter();
     const [isPopUpEditOpen, setIsPopUpEditOpen] = useState(false);
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const isCompleted = project.isCompleted ?? false;
 
     const handleEditProject = (e: React.MouseEvent) => {
@@ -25,8 +27,7 @@ export default function ProjectCard({ project, onUpdate, onDelete }: ProjectCard
         setIsPopUpEditOpen(true);
     };
 
-    const handleDeleteProject = async (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevents the card's onClick from firing
+    const handleDeleteProject = async () => {
         try {
             if (project.id) {
                 await ProjectService.deleteProject(project.id);
@@ -62,6 +63,12 @@ export default function ProjectCard({ project, onUpdate, onDelete }: ProjectCard
                 }}
                 project={project}
             />}
+            <ConfirmDeleteModal
+                isOpen={isConfirmDeleteOpen}
+                onClose={() => setIsConfirmDeleteOpen(false)}
+                onConfirm={handleDeleteProject}
+                itemName={project.title}
+            />
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row items-start justify-between">
                     <div>
@@ -88,22 +95,27 @@ export default function ProjectCard({ project, onUpdate, onDelete }: ProjectCard
                 </div>
             </div>
 
-            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-row items-center justify-between gap-2">
-                <div>
+            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-wrap items-center justify-between gap-3">
+                <div className="shrink-0">
                     <p className="text-sm mt-1 text-text-secondary">Tarefas: {completedTasks}/{totalTasks}</p>
                 </div>
                 {!isCompleted && (
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto flex-1 justify-end min-w-[200px]">
                         <Button
                             icon={<LuTrash2 />}
                             text="Excluir"
                             variant="cancel"
-                            onClick={handleDeleteProject}
+                            className="flex-1 min-w-[100px]"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsConfirmDeleteOpen(true);
+                            }}
                         />
                         <Button
                             icon={<LuPencil />}
                             text="Editar"
                             variant="secondary"
+                            className="flex-1 min-w-[100px]"
                             onClick={handleEditProject}
                         />
                     </div>

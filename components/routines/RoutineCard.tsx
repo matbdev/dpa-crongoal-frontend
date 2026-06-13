@@ -1,25 +1,31 @@
 import { Routine } from "@/types/routine";
-import { LuPencil, LuTrash2, LuRepeat } from "react-icons/lu";
+import { LuPencil, LuTrash2, LuRepeat, LuCoins } from "react-icons/lu";
 import * as RoutineService from "@/services/routine.service";
 import toast from "react-hot-toast";
 import Button from "../ui/Button";
 import { useState } from "react";
 import AddEditRoutinePopUp from "./AddEditRoutinePopUp";
+import ConfirmDeleteModal from "../ui/ConfirmDeleteModal";
+import { useRouter } from "next/navigation";
 
 interface RoutineCardProps {
     routine: Routine;
     onUpdate?: (updatedRoutine: Routine) => void;
     onDelete?: (deletedId: string) => void;
+    isCompleted?: boolean;
 }
 
-export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCardProps) {
+export default function RoutineCard({ routine, onUpdate, onDelete, isCompleted }: RoutineCardProps) {
+    const router = useRouter();
     const [isPopUpEditOpen, setIsPopUpEditOpen] = useState(false);
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
     const handleUpdateRoutine = (updatedRoutine: Routine) => {
         if (onUpdate) onUpdate(updatedRoutine);
     };
 
-    const handleEditRoutine = () => {
+    const handleEditRoutine = (e: React.MouseEvent) => {
+        e.stopPropagation();
         setIsPopUpEditOpen(true);
     };
 
@@ -38,8 +44,12 @@ export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCard
         };
     };
 
+    const handleCardClick = () => {
+        router.push(`/routines/${routine.id}`);
+    };
+
     return (
-        <div className="flex flex-col gap-3 rounded-xl p-5 border transition-all bg-bg-card border-border-card hover:border-accent hover:shadow-md">
+        <div onClick={handleCardClick} className={`flex flex-col gap-3 rounded-xl p-5 border transition-all cursor-pointer bg-bg-card border-border-card hover:border-accent hover:shadow-md ${isCompleted ? 'opacity-60' : ''}`}>
             {isPopUpEditOpen && <AddEditRoutinePopUp
                 onClose={() => { setIsPopUpEditOpen(false) }}
                 onSuccess={(updatedRoutine: Routine) => {
@@ -48,6 +58,12 @@ export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCard
                 }}
                 routine={routine}
             />}
+            <ConfirmDeleteModal
+                isOpen={isConfirmDeleteOpen}
+                onClose={() => setIsConfirmDeleteOpen(false)}
+                onConfirm={handleDeleteRoutine}
+                itemName={routine.name}
+            />
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row items-start justify-between">
                     <div>
@@ -62,6 +78,11 @@ export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCard
                                 {routine.period === 'ANNUAL' && 'Anual'}
                                 {!routine.period && 'Recorrente'}
                             </span>
+                            {isCompleted && (
+                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-success/10 text-success">
+                                    Concluída ✓
+                                </span>
+                            )}
                         </div>
                         <h3 className="font-semibold text-lg leading-tight text-text-primary">{routine.name}</h3>
                         {routine.description && (
@@ -71,21 +92,32 @@ export default function RoutineCard({ routine, onUpdate, onDelete }: RoutineCard
                 </div>
             </div>
 
-            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-row items-center justify-between gap-2">
-                <div>
-                    <p className="text-sm mt-1 text-text-secondary">Tarefas: {routine.routineTasks?.length || 0}</p>
+            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col gap-0.5 shrink-0">
+                    <p className="text-sm text-text-secondary">Tarefas: {routine.routineTasks?.length || 0}</p>
+                    <div className="flex items-center gap-1.5 font-bold text-warning whitespace-nowrap text-xs">
+                        <LuCoins size={14} />
+                        <span>
+                            {routine.routineTasks?.reduce((sum, rt) => sum + (rt.task?.generatedPoints || 0), 0) || 0} pts totais
+                        </span>
+                    </div>
                 </div>
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto flex-1 justify-end min-w-[200px]">
                     <Button
                         icon={<LuTrash2 />}
                         text="Excluir"
                         variant="cancel"
-                        onClick={handleDeleteRoutine}
+                        className="flex-1 min-w-[100px]"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsConfirmDeleteOpen(true);
+                        }}
                     />
                     <Button
                         icon={<LuPencil />}
                         text="Editar"
                         variant="secondary"
+                        className="flex-1 min-w-[100px]"
                         onClick={handleEditRoutine}
                     />
                 </div>

@@ -28,6 +28,61 @@ export default function RoutinesPage() {
         setRoutines(prev => prev.filter(r => r.id !== deletedId))
     };
 
+    const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+
+    // Helper para saber se a rotina foi completada no período
+    const isRoutineCompletedInPeriod = (routine: Routine) => {
+        if (!routine.routineTasks || routine.routineTasks.length === 0) return false;
+
+        const now = new Date();
+        let periodStart = new Date(now);
+        
+        switch (routine.period) {
+            case 'DAILY':
+                periodStart.setHours(0, 0, 0, 0);
+                break;
+            case 'WEEKLY':
+                const day = periodStart.getDay();
+                const diff = periodStart.getDate() - day + (day === 0 ? -6 : 1);
+                periodStart.setDate(diff);
+                periodStart.setHours(0, 0, 0, 0);
+                break;
+            case 'MONTHLY':
+                periodStart.setDate(1);
+                periodStart.setHours(0, 0, 0, 0);
+                break;
+            case 'QUARTERLY':
+                const quarterMonth = Math.floor(periodStart.getMonth() / 3) * 3;
+                periodStart.setMonth(quarterMonth, 1);
+                periodStart.setHours(0, 0, 0, 0);
+                break;
+            case 'SEMIANNUAL':
+                const halfMonth = Math.floor(periodStart.getMonth() / 6) * 6;
+                periodStart.setMonth(halfMonth, 1);
+                periodStart.setHours(0, 0, 0, 0);
+                break;
+            case 'ANNUAL':
+                periodStart.setMonth(0, 1);
+                periodStart.setHours(0, 0, 0, 0);
+                break;
+        }
+
+        return routine.routineTasks.every(rt => {
+            if (!rt.task || !rt.task.registers) return false;
+            return rt.task.registers.some((reg: any) => 
+                reg.isDone && new Date(reg.registerDate) >= periodStart
+            );
+        });
+    };
+
+    const filteredRoutines = routines.filter(r => {
+        if (filter === 'all') return true;
+        const isCompleted = isRoutineCompletedInPeriod(r);
+        if (filter === 'completed') return isCompleted;
+        if (filter === 'pending') return !isCompleted;
+        return true;
+    });
+
     return (
         <div className="p-8 h-[calc(100vh-80px)] flex flex-col">
             {isPopUpAddNewOpen && <AddEditRoutinePopUp
@@ -40,8 +95,29 @@ export default function RoutinesPage() {
 
             <div className="flex flex-col gap-6 h-full">
                 <div className="flex flex-row items-center justify-between">
-                    <div className="flex items-center gap-6">
+                    <div className="flex flex-col gap-2">
                         <h1 className="text-2xl font-semibold text-text-primary">Rotinas</h1>
+                        {/* Tabs de Filtro */}
+                        <div className="flex items-center gap-2 bg-bg-card p-1 rounded-lg border border-border-card w-fit">
+                            <button
+                                onClick={() => setFilter('all')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === 'all' ? 'bg-bg-main text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                Todas
+                            </button>
+                            <button
+                                onClick={() => setFilter('pending')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === 'pending' ? 'bg-bg-main text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                Pendentes
+                            </button>
+                            <button
+                                onClick={() => setFilter('completed')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${filter === 'completed' ? 'bg-bg-main text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                Concluídas
+                            </button>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
@@ -60,15 +136,18 @@ export default function RoutinesPage() {
                 <div className="flex-1 overflow-hidden">
                     {isLoading ? null : routines.length === 0 ? (
                         <CustomEmptyList text="Nenhuma rotina encontrada" secondaryText="Cadastre uma nova rotina para começar" />
+                    ) : filteredRoutines.length === 0 ? (
+                        <CustomEmptyList text="Nenhuma rotina com esse status" secondaryText="Tente mudar o filtro." />
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 overflow-y-auto pr-2 pb-8 h-full content-start">
-                            {routines.map(routine => (
+                            {filteredRoutines.map(routine => (
                                 <RoutineCard
                                     key={routine.id || routine.name}
                                     routine={routine}
-                                onUpdate={handleUpdateRoutine}
-                                onDelete={handleDeleteRoutine}
-                            />
+                                    onUpdate={handleUpdateRoutine}
+                                    onDelete={handleDeleteRoutine}
+                                    isCompleted={isRoutineCompletedInPeriod(routine)}
+                                />
                             ))}
                         </div>
                     )}

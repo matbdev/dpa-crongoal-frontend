@@ -48,15 +48,13 @@ export default function TaskSelector({ context, selectedTaskIds, onSelectionChan
         onSelectionChange([...selectedTaskIds, newTask.id as string]);
     };
 
-    // Filtro de exclusividade:
-    // Se context = project, só mostra tasks que NÃO têm rotina.
-    // Se context = routine, só mostra tasks que NÃO têm projeto.
+    // Filtro rigoroso: só tarefas Órfãs e Não-Concluídas, a menos que já estejam selecionadas
     const availableTasks = tasks.filter(task => {
-        if (context === "project") {
-            return !task.routineTasks || task.routineTasks.length === 0;
-        } else {
-            return !task.projectId;
-        }
+        if (selectedTaskIds.includes(task.id as string)) return true;
+        if (task.isCompleted) return false;
+        if (task.projectId) return false;
+        if (task.routineTasks && task.routineTasks.length > 0) return false;
+        return true;
     });
 
     const selectedTasks = availableTasks.filter(task => selectedTaskIds.includes(task.id as string));

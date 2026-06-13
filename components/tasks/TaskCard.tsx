@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Button from "../ui/Button";
 import { useState } from "react";
 import AddNewTaskPopUp from "./AddEditTaskPopUp";
+import ConfirmDeleteModal from "../ui/ConfirmDeleteModal";
 import { usePoints } from "@/contexts/PointsContext";
 
 interface TaskCardProps {
@@ -16,15 +17,22 @@ interface TaskCardProps {
 
 export default function TaskCard({ task, onUpdate, onDelete, onComplete }: TaskCardProps) {
     const [isPopUpEditOpen, setIsPopUpEditOpen] = useState(false);
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const [isCompleted, setIsCompleted] = useState(task.isCompleted ?? false);
     const { addPoints } = usePoints();
 
     const handleCompleteTask = async () => {
         try {
-            await TaskService.createDailyRegister({ taskId: task.id as string, isDone: true });
-            addPoints(task.generatedPoints);
+            const { awardedPoints } = await TaskService.createDailyRegister({ taskId: task.id as string, isDone: true });
+
+            if (awardedPoints > 0) {
+                addPoints(awardedPoints);
+                toast.success(`+${awardedPoints} pts!`, { icon: '🎉' });
+            } else {
+                toast.success("Tarefa registrada!");
+            }
+
             setIsCompleted(true);
-            toast.success("Tarefa concluída!");
             if (onComplete) {
                 onComplete(task.id as string);
             }
@@ -71,21 +79,29 @@ export default function TaskCard({ task, onUpdate, onDelete, onComplete }: TaskC
                 }}
                 task={task}
             />}
+            <ConfirmDeleteModal
+                isOpen={isConfirmDeleteOpen}
+                onClose={() => setIsConfirmDeleteOpen(false)}
+                onConfirm={handleDeleteTask}
+                itemName={task.title}
+            />
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row items-start justify-between">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            {task.project ? (
+                            {task.project && (
                                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">
                                     Projeto: {task.project.title}
                                 </span>
-                            ) : task.routineTasks && task.routineTasks.length > 0 ? (
+                            )}
+                            {(!task.project && task.routineTasks && task.routineTasks.length > 0) && (
                                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">
                                     Rotina: {task.routineTasks[0].routine?.name ?? 'Sem nome'}
                                 </span>
-                            ) : (
-                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">
-                                    Única
+                            )}
+                            {(!task.projectId && (!task.routineTasks || task.routineTasks.length === 0)) && (
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${task.type === 'UNIQUE' ? 'bg-accent/10 text-accent' : 'bg-secondary/10 text-secondary'}`}>
+                                    {task.type === 'UNIQUE' ? 'Única' : ''}
                                 </span>
                             )}
                             {isCompleted && (
@@ -102,35 +118,33 @@ export default function TaskCard({ task, onUpdate, onDelete, onComplete }: TaskC
                 </div>
             </div>
 
-            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-row items-center justify-between gap-2">
+            <div className="mt-auto w-full pt-3 border-t border-border-card flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-1.5 font-bold text-warning whitespace-nowrap">
                     <LuCoins size={18} />
                     <span>{task.generatedPoints} pts</span>
                 </div>
 
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto flex-1 justify-end min-w-[200px]">
                     <Button
                         icon={<LuTrash2 />}
                         text="Excluir"
                         variant="cancel"
-                        className={isCompleted ? 'hidden' : ''}
-                        onClick={handleDeleteTask}
+                        className={`flex-1 min-w-[100px] ${isCompleted ? 'hidden' : ''}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsConfirmDeleteOpen(true);
+                        }}
                     />
                     <Button
                         icon={<LuPencil />}
                         text="Editar"
                         variant="secondary"
-                        className={isCompleted ? 'hidden' : ''}
-                        onClick={handleEditTask}
+                        className={`flex-1 min-w-[100px] ${isCompleted ? 'hidden' : ''}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditTask();
+                        }}
                     />
-                    {!isCompleted && !(task.routineTasks && task.routineTasks.length > 0) && (
-                        <Button
-                            icon={<LuCheck />}
-                            onClick={handleCompleteTask}
-                            text="Concluir"
-                            variant="primary"
-                        />
-                    )}
                 </div>
             </div>
         </div>

@@ -17,9 +17,11 @@ interface AddNewTaskPopUpProps {
     onClose: () => void;
     onSuccess?: (task: Task) => void;
     task?: Task;
+    defaultProjectId?: string;
+    defaultRoutineId?: string;
 }
 
-export default function AddNewTaskPopUp({ onClose, onSuccess, task }: AddNewTaskPopUpProps) {
+export default function AddNewTaskPopUp({ onClose, onSuccess, task, defaultProjectId, defaultRoutineId }: AddNewTaskPopUpProps) {
     const [isLoading, setIsLoading] = useState(false);
 
     const {
@@ -43,13 +45,21 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task }: AddNewTask
                 title: data.title,
                 description: data.description,
                 generatedPoints: Number(data.generatedPoints),
-                type: data.type
+                type: data.type,
+                status: task?.status || "TODO"
             };
+
+            if (defaultProjectId) {
+                finalTask.projectId = defaultProjectId;
+            }
+            if (defaultRoutineId) {
+                finalTask.type = 'RECURRENT';
+            }
 
             // Edit logic
             if (task) {
                 const updated = await TaskService.updateTask(task?.id as string, finalTask);
-                toast.success("Recompensa atualizada com sucesso!");
+                toast.success("Tarefa atualizada com sucesso!");
 
                 if (onSuccess) {
                     onSuccess(updated);
@@ -58,9 +68,14 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task }: AddNewTask
                 };
             } else {
                 // Add logic
-
                 const created = await TaskService.createTask(finalTask);
-                toast.success("Recompensa criada com sucesso!");
+                
+                if (defaultRoutineId) {
+                    const { addTaskToRoutine } = await import('@/services/routine.service');
+                    await addTaskToRoutine(defaultRoutineId, created.id as string);
+                }
+                
+                toast.success("Tarefa criada com sucesso!");
 
                 if (onSuccess) {
                     onSuccess(created);

@@ -6,9 +6,10 @@ import KanbanBoard, { KanbanColumnDef } from "@/components/ui/KanbanBoard";
 import Button from "@/components/ui/Button";
 import CustomEmptyList from "@/components/ui/CustomEmptyList";
 import { Task } from "@/types/task";
-import { LuPlus, LuLayoutGrid, LuSquareKanban, LuFileText } from "react-icons/lu";
+import { LuPlus, LuLayoutGrid, LuSquareKanban, LuFileText, LuArrowLeft } from "react-icons/lu";
 import { useState } from "react";
 import ReportModal from "@/components/reports/ReportModal";
+import { useRouter } from "next/navigation";
 
 interface TasksPageBaseProps {
     title?: string;
@@ -20,6 +21,12 @@ interface TasksPageBaseProps {
     handleUpdateTask?: (updatedTask: Task) => void;
     handleDeleteTask?: (taskId: string) => void;
     handleCompleteTask?: (taskId: string) => void;
+    backUrl?: string;
+    backLabel?: string;
+    defaultProjectId?: string;
+    defaultRoutineId?: string;
+    customKanbanColumns?: KanbanColumnDef<Task>[];
+    customOnItemMove?: (taskId: string, sourceColId: string, destColId: string) => Promise<void>;
 }
 
 export default function TasksPageBase({
@@ -31,17 +38,24 @@ export default function TasksPageBase({
     setIsLoading,
     handleUpdateTask,
     handleDeleteTask,
-    handleCompleteTask
+    handleCompleteTask,
+    backUrl,
+    backLabel = "Voltar",
+    defaultProjectId,
+    defaultRoutineId,
+    customKanbanColumns,
+    customOnItemMove
 }: TasksPageBaseProps) {
     const [isPopUpAddNewOpen, setIsPopUpAddNewOpen] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('kanban');
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const router = useRouter();
 
-    // Define columns placing tasks based on completion status
-    const kanbanColumns: KanbanColumnDef<Task>[] = [
-        { id: "todo", title: "A Fazer", items: pageTasks.filter(t => !t.isCompleted) },
-        { id: "in_progress", title: "Em Andamento", items: [] },
-        { id: "done", title: "Concluído", items: pageTasks.filter(t => t.isCompleted) },
+    // Define columns placing tasks based on completion and status
+    const kanbanColumns: KanbanColumnDef<Task>[] = (customKanbanColumns && customKanbanColumns.length > 0) ? customKanbanColumns : [
+        { id: "todo", title: "A Fazer", items: pageTasks.filter(t => !t.isCompleted && t.status !== 'IN_PROGRESS') },
+        { id: "in_progress", title: "Em Andamento", items: pageTasks.filter(t => !t.isCompleted && t.status === 'IN_PROGRESS') },
+        { id: "done", title: "Concluído", items: pageTasks.filter(t => t.isCompleted || t.status === 'DONE') },
     ];
 
     return (
@@ -53,9 +67,20 @@ export default function TasksPageBase({
                         setPageTasks && setPageTasks([...pageTasks, task]);
                         setIsPopUpAddNewOpen(false);
                     }}
+                    defaultProjectId={defaultProjectId}
+                    defaultRoutineId={defaultRoutineId}
                 />
             )}
             <div className="flex flex-col gap-6 h-full">
+                {backUrl && (
+                    <button 
+                        onClick={() => router.push(backUrl)}
+                        className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary self-start transition-colors"
+                    >
+                        <LuArrowLeft size={16} />
+                        {backLabel}
+                    </button>
+                )}
                 <div className="flex flex-row items-center justify-between">
                     <div className="flex items-center gap-6">
                         <h1 className="text-2xl font-semibold text-text-primary">{title}</h1>
@@ -91,7 +116,17 @@ export default function TasksPageBase({
                     </div>
                 </div>
 
-                <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} module="tasks" />
+                <ReportModal 
+                    isOpen={isReportModalOpen} 
+                    onClose={() => setIsReportModalOpen(false)} 
+                    module="tasks"
+                    initialFilters={Object.fromEntries(
+                        Object.entries({
+                            projectId: defaultProjectId,
+                            routineId: defaultRoutineId
+                        }).filter((entry): entry is [string, string] => entry[1] !== undefined)
+                    )} 
+                />
 
                 <div className="flex-1 overflow-hidden">
                     {isLoading ? null : pageTasks.length === 0 ? (
@@ -114,13 +149,20 @@ export default function TasksPageBase({
                             emptyText="Nenhuma tarefa"
                             getId={(task) => task.id as string}
                             isItemDraggable={(task) => !task.isCompleted}
-                            onItemMove={async (taskId, sourceColId, destColId) => {
+                            onItemMove={customOnItemMove || (async (taskId, sourceColId, destColId) => {
                                 if (destColId === 'done' && handleCompleteTask) {
                                     handleCompleteTask(taskId);
-                                } else if (destColId !== 'done') {
-                                    // Normally we would save column state, but for now we only have basic status
+                                } else if (destColId !== 'done' && handleUpdateTask) {
+                                    const newStatus = destColId === 'in_progress' ? 'IN_PROGRESS' : 'TODO';
+                                    const taskToUpdate = pageTasks.find(t => t.id === taskId);
+                                    if (taskToUpdate) {
+                                        const updatedTask = { ...taskToUpdate, status: newStatus as any };
+                                        handleUpdateTask(updatedTask);
+                                        const { updateTask } = await import('@/services/task.service');
+                                        await updateTask(taskId, { status: newStatus as any });
+                                    }
                                 }
-                            }}
+                            })}
                             renderCard={(task) => (
                                 <TaskCard
                                     key={task.id || task.title}

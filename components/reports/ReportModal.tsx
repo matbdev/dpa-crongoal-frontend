@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { LuX, LuFileText, LuFileSpreadsheet, LuFilter, LuList, LuLoader } from 'react-icons/lu';
-import { getReportsByModule, type ReportDefinition } from '@/lib/reports/reportDefinitions';
+import { getReportsByModule, type ReportDefinition } from '@/lib/reports/index';
 import { generateReportPdf } from '@/lib/reports/pdfGenerator';
 import { generateReportCsv } from '@/lib/reports/csvGenerator';
 import ReportFilters from './ReportFilters';
@@ -13,11 +13,12 @@ interface ReportModalProps {
     onClose: () => void;
     /** Module context: 'all' | 'tasks' | 'projects' | 'routines' | 'rewards' */
     module?: string;
+    initialFilters?: Record<string, string>;
 }
 
-export default function ReportModal({ isOpen, onClose, module = 'all' }: ReportModalProps) {
+export default function ReportModal({ isOpen, onClose, module = 'all', initialFilters = {} }: ReportModalProps) {
     const [selectedReport, setSelectedReport] = useState<ReportDefinition | null>(null);
-    const [filterValues, setFilterValues] = useState<Record<string, string>>({});
+    const [filterValues, setFilterValues] = useState<Record<string, string>>(initialFilters);
     const [isGenerating, setIsGenerating] = useState(false);
 
     if (!isOpen) return null;
@@ -28,7 +29,7 @@ export default function ReportModal({ isOpen, onClose, module = 'all' }: ReportM
 
     const handleSelectReport = (report: ReportDefinition) => {
         setSelectedReport(report);
-        setFilterValues({});
+        setFilterValues(initialFilters);
     };
 
     const handleFilterChange = (key: string, value: string) => {

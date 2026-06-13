@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import type { FilterDef } from '@/lib/reports/reportDefinitions';
+import type { FilterDef } from '@/lib/reports/index';
 
 interface ReportFiltersProps {
     filters: FilterDef[];

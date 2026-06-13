@@ -4,6 +4,8 @@ import TasksPageBase from "@/components/tasks/TaskPageBase";
 import { getTasks } from "@/services/task.service";
 import { Task } from "@/types/task";
 import { useEffect, useState } from "react";
+import { usePoints } from "@/contexts/PointsContext";
+import toast from "react-hot-toast";
 
 export default function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -17,8 +19,22 @@ export default function TasksPage() {
         setTasks(prev => prev.filter(r => r.id !== deletedId))
     };
 
-    const handleCompleteTask = (taskId: string) => {
-        // Task stays visible — the TaskCard handles its own completion UI
+    const { addPoints } = usePoints();
+
+    const handleCompleteTask = async (taskId: string) => {
+        try {
+            const { createDailyRegister } = await import('@/services/task.service');
+            const { awardedPoints } = await createDailyRegister({ taskId, isDone: true });
+            
+            if (awardedPoints > 0) {
+                addPoints(awardedPoints);
+                toast.success(`Tarefa concluída! +${awardedPoints} pts`);
+            }
+            
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: true } : t));
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     useEffect(() => {

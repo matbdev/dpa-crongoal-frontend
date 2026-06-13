@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import DashboardCard from "@/components/dashboard/DashboardCard";
+import QuoteWidget from "@/components/dashboard/QuoteWidget";
 import { getTaskCount, getDailyTasks } from "@/services/task.service";
 import { getProjectCount, getProjects } from "@/services/project.service";
 import { getRoutineCount } from "@/services/routine.service";
@@ -185,7 +186,7 @@ export default function DashboardPage() {
                         <div className="h-8 w-64 rounded-lg bg-bg-card animate-pulse"></div>
                     ) : (
                         <h1 className="text-2xl font-bold text-text-primary">
-                            {getGreeting()}{userName ? `, ${userName.split(" ")[0]}` : ""}!
+                            {getGreeting()}{userName ? `, ${userName}` : ""}!
                         </h1>
                     )}
                     <p className="text-text-secondary mt-1">Aqui está o resumo das suas atividades.</p>
@@ -200,6 +201,9 @@ export default function DashboardPage() {
             </div>
 
             <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} module="all" />
+
+            {/* Motivational Quote */}
+            <QuoteWidget />
 
             {/* Summary Cards */}
             {isLoading ? (
@@ -352,7 +356,7 @@ export default function DashboardPage() {
                                             <span className="text-[10px] text-text-secondary uppercase">Total</span>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Legend */}
                                     <div className="flex flex-col gap-3 flex-1 ml-6">
                                         <div className="flex items-center justify-between">

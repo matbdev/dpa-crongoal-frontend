@@ -58,7 +58,7 @@ export async function redeemReward(id: string): Promise<Reward> {
 }
 
 export async function getAllRedeemsByReward(id: string): Promise<Reward[]> {
-    const response = await api.get(`/api/reward/${id}/redeem`);
+    const response = await api.get(`/api/reward/${id}/redeems`);
     return response.data;
 }
 

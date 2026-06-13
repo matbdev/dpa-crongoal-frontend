@@ -1,9 +1,11 @@
 export type TaskType = 'RECURRENT' | 'UNIQUE';
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE';
 
 export interface Task {
     id?: string;
     title: string;
     type: TaskType;
+    status: TaskStatus;
     generatedPoints: number;
     isCompleted?: boolean;
     description?: string;
@@ -13,6 +15,7 @@ export interface Task {
     columnId?: string;
     project?: { id: string; title: string };
     routineTasks?: { routineId: string; routine?: { id: string; name: string } }[];
+    registers?: DailyRegister[];
 }
 
 export interface DailyRegister {

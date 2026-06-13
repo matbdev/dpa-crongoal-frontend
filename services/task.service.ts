@@ -30,7 +30,7 @@ export async function deleteTask(id: string): Promise<void> {
     await api.delete(`/api/task/${id}`);
 }
 
-export async function createDailyRegister(data: Partial<DailyRegister>): Promise<DailyRegister> {
+export async function createDailyRegister(data: any): Promise<{ register: DailyRegister, awardedPoints: number }> {
     const response = await api.post('/api/task/daily', data);
     return response.data;
 }

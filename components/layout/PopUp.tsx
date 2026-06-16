@@ -20,7 +20,7 @@ export default function PopUp({ title, content, onClose }: PopUpProps) {
     if (!mounted) return null;
 
     const modal = (
-        <div className="fixed z-100 inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div onClick={(e) => e.stopPropagation()} className="fixed z-100 inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="min-h-72 min-w-96 max-w-xl w-full flex flex-col shadow-2xl rounded-lg overflow-hidden border border-border-card">
                 <div className="bg-bg-sidebar px-6 py-4 flex flex-row justify-between items-center border-b border-border-card">
                     <h2 className="font-bold text-lg">{title}</h2>

@@ -43,12 +43,11 @@ export default function LoginForm({ setIsLoading, router, isLoading, toggleMode 
             toast.success("Login realizado com sucesso!");
             router.push("/dashboard");
         } catch (error: any) {
-            const message =
+            toast.error(
                 error.response?.data?.errors?.[0]?.message ||
                 error.response?.data?.error ||
-                "Erro ao realizar login";
-            console.error("Auth error:", message);
-            toast.error(message);
+                "Erro ao realizar login"
+            );
         } finally {
             setIsLoading(false);
         }

@@ -21,7 +21,7 @@ export default function ConfirmDeleteModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={(e) => { e.stopPropagation(); onClose(); }}>
             <div
                 className="bg-bg-main w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-border-card"
                 onClick={e => e.stopPropagation()}

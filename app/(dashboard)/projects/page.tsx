@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
-import { LuPlus, LuLayoutGrid, LuSquareKanban, LuFileText } from "react-icons/lu";
+import { LuPlus, LuLayoutGrid, LuSquareKanban, LuFileText, LuSearch } from "react-icons/lu";
 import ProjectCard from "@/components/projects/ProjectCard";
 import KanbanBoard, { KanbanColumnDef } from "@/components/ui/KanbanBoard";
 import { useEffect, useState } from "react";
@@ -19,6 +19,7 @@ export default function ProjectsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('kanban');
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'overdue'>('active');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         ProjectService.getProjects().then(setProjects).finally(() => setIsLoading(false));
@@ -38,9 +39,19 @@ export default function ProjectsPage() {
     const filteredProjects = projects.filter(project => {
         const isOverdue = new Date(project.limitDate) < now && !project.isCompleted;
         
-        if (activeTab === 'completed') return project.isCompleted;
-        if (activeTab === 'overdue') return isOverdue;
-        return !project.isCompleted && !isOverdue;
+        if (activeTab === 'completed' && !project.isCompleted) return false;
+        if (activeTab === 'overdue' && !isOverdue) return false;
+        if (activeTab === 'active' && (project.isCompleted || isOverdue)) return false;
+
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            return (
+                project.title?.toLowerCase().includes(query) ||
+                project.description?.toLowerCase().includes(query)
+            );
+        }
+
+        return true;
     });
 
     return (
@@ -81,6 +92,16 @@ export default function ProjectsPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <div className="relative hidden md:block">
+                            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+                            <input 
+                                type="text"
+                                placeholder="Buscar projetos..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-10 pr-4 py-2 rounded-md border border-border-card bg-bg-card text-text-primary focus:outline-none focus:border-accent w-64 text-sm"
+                            />
+                        </div>
                         <button
                             onClick={() => setIsReportModalOpen(true)}
                             className="flex items-center gap-2 px-4 py-2 rounded-md border border-border-card bg-bg-card text-text-primary hover:border-accent hover:text-accent transition-colors text-sm font-medium"
@@ -98,7 +119,7 @@ export default function ProjectsPage() {
                     {isLoading ? null : filteredProjects.length === 0 ? (
                         <CustomEmptyList 
                             text={activeTab === 'active' ? "Nenhum projeto em andamento" : activeTab === 'completed' ? "Nenhum projeto concluído" : "Nenhum projeto vencido"} 
-                            secondaryText={activeTab === 'active' ? "Cadastre um novo projeto para começar" : ""} 
+                            secondaryText={searchQuery ? "Tente buscar por outro termo" : activeTab === 'active' ? "Cadastre um novo projeto para começar" : ""} 
                         />
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 overflow-y-auto pr-2 pb-8 h-full content-start">

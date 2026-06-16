@@ -40,7 +40,7 @@ export default function ProjectTasks({ params }: PageProps) {
                 toast.success("Tarefa concluída!");
             }
 
-            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: true } : t));
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: true, status: 'DONE' } : t));
         } catch (error) {
             console.error(error);
         }

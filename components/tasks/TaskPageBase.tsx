@@ -53,7 +53,7 @@ export default function TasksPageBase({
 
     // Define columns placing tasks based on completion and status
     const kanbanColumns: KanbanColumnDef<Task>[] = (customKanbanColumns && customKanbanColumns.length > 0) ? customKanbanColumns : [
-        { id: "todo", title: "A Fazer", items: pageTasks.filter(t => !t.isCompleted && t.status !== 'IN_PROGRESS') },
+        { id: "todo", title: "A Fazer", items: pageTasks.filter(t => !t.isCompleted && t.status !== 'IN_PROGRESS' && t.status !== 'DONE') },
         { id: "in_progress", title: "Em Andamento", items: pageTasks.filter(t => !t.isCompleted && t.status === 'IN_PROGRESS') },
         { id: "done", title: "Concluído", items: pageTasks.filter(t => t.isCompleted || t.status === 'DONE') },
     ];

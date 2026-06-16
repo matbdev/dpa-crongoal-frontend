@@ -31,7 +31,7 @@ export default function TasksPage() {
                 toast.success(`Tarefa concluída! +${awardedPoints} pts`);
             }
             
-            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: true } : t));
+            setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: true, status: 'DONE' } : t));
         } catch (error) {
             console.error(error);
         }

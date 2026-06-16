@@ -54,6 +54,7 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task, defaultProje
             }
             if (defaultRoutineId) {
                 finalTask.type = 'RECURRENT';
+                (finalTask as any).routineId = defaultRoutineId;
             }
 
             // Edit logic
@@ -69,11 +70,6 @@ export default function AddNewTaskPopUp({ onClose, onSuccess, task, defaultProje
             } else {
                 // Add logic
                 const created = await TaskService.createTask(finalTask);
-                
-                if (defaultRoutineId) {
-                    const { addTaskToRoutine } = await import('@/services/routine.service');
-                    await addTaskToRoutine(defaultRoutineId, created.id as string);
-                }
                 
                 toast.success("Tarefa criada com sucesso!");
 

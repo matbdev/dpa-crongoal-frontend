@@ -261,9 +261,12 @@ export default function DashboardPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Today's Progress */}
                         <div className="rounded-2xl border border-border-card bg-bg-card p-6">
-                            <div className="flex items-center gap-2 mb-5">
-                                <LuFlame size={20} className="text-warning" />
-                                <h2 className="text-lg font-semibold text-text-primary">Progresso de Hoje</h2>
+                            <div className="mb-5">
+                                <div className="flex items-center gap-2">
+                                    <LuFlame size={20} className="text-warning" />
+                                    <h2 className="text-lg font-semibold text-text-primary">Progresso de Hoje</h2>
+                                </div>
+                                <p className="text-xs text-text-secondary mt-1">Visão geral das suas tarefas para o dia atual.</p>
                             </div>
 
                             {todayProgress.total === 0 ? (
@@ -301,9 +304,12 @@ export default function DashboardPage() {
 
                         {/* Weekly Chart */}
                         <div className="rounded-2xl border border-border-card bg-bg-card p-6">
-                            <div className="flex items-center gap-2 mb-5">
-                                <LuChartBar size={20} className="text-accent" />
-                                <h2 className="text-lg font-semibold text-text-primary">Semana</h2>
+                            <div className="mb-5">
+                                <div className="flex items-center gap-2">
+                                    <LuChartBar size={20} className="text-accent" />
+                                    <h2 className="text-lg font-semibold text-text-primary">Semana</h2>
+                                </div>
+                                <p className="text-xs text-text-secondary mt-1">Desempenho de tarefas concluídas nos últimos 7 dias.</p>
                             </div>
 
                             <div className="flex items-end justify-between gap-2 h-36">
@@ -331,9 +337,12 @@ export default function DashboardPage() {
 
                         {/* Project Status Chart */}
                         <div className="rounded-2xl border border-border-card bg-bg-card p-6">
-                            <div className="flex items-center gap-2 mb-5">
-                                <LuChartPie size={20} className="text-secondary" />
-                                <h2 className="text-lg font-semibold text-text-primary">Status dos Projetos</h2>
+                            <div className="mb-5">
+                                <div className="flex items-center gap-2">
+                                    <LuChartPie size={20} className="text-secondary" />
+                                    <h2 className="text-lg font-semibold text-text-primary">Status dos Projetos</h2>
+                                </div>
+                                <p className="text-xs text-text-secondary mt-1">Proporção de projetos ativos versus concluídos.</p>
                             </div>
 
                             {projectStatus.total === 0 ? (
@@ -383,9 +392,12 @@ export default function DashboardPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Upcoming Projects */}
                         <div className="rounded-2xl border border-border-card bg-bg-card p-6">
-                            <div className="flex items-center gap-2 mb-5">
-                                <LuCalendarClock size={20} className="text-accent" />
-                                <h2 className="text-lg font-semibold text-text-primary">Próximos Prazos</h2>
+                            <div className="mb-5">
+                                <div className="flex items-center gap-2">
+                                    <LuCalendarClock size={20} className="text-accent" />
+                                    <h2 className="text-lg font-semibold text-text-primary">Próximos Prazos</h2>
+                                </div>
+                                <p className="text-xs text-text-secondary mt-1">Projetos com data de entrega mais próxima.</p>
                             </div>
 
                             {upcomingProjects.length === 0 ? (
@@ -414,9 +426,12 @@ export default function DashboardPage() {
 
                         {/* Recent Daily Completions */}
                         <div className="rounded-2xl border border-border-card bg-bg-card p-6">
-                            <div className="flex items-center gap-2 mb-5">
-                                <LuClipboardCheck size={20} className="text-success" />
-                                <h2 className="text-lg font-semibold text-text-primary">Atividade Recente</h2>
+                            <div className="mb-5">
+                                <div className="flex items-center gap-2">
+                                    <LuClipboardCheck size={20} className="text-success" />
+                                    <h2 className="text-lg font-semibold text-text-primary">Atividade Recente</h2>
+                                </div>
+                                <p className="text-xs text-text-secondary mt-1">Últimos registros das suas tarefas diárias.</p>
                             </div>
 
                             {recentDaily.length === 0 ? (

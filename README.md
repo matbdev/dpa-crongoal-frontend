@@ -1,4 +1,6 @@
-# CronGoal - The open source goal tracking application, designed by/for you!
+> 🇺🇸 [View in English](README-en.md) · 🔗 [Ver Backend](https://github.com/matbdev/dpa-crongoal-backend)
+
+# CronGoal — Aplicação open source de acompanhamento de metas, feita por e para você!
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -6,131 +8,143 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Zod](https://img.shields.io/badge/Zod-000000?style=for-the-badge&logo=zod&logoColor=3068B7)
 
-> [!NOTE]
-> This README is particularly focused on documenting the **Frontend Web Application** built natively with Next.js (App Router).
+> Interface web completa do ecossistema CronGoal — construída com Next.js (App Router) + React + TypeScript, focada em experiência de usuário, responsividade e integração total com a API backend.
 
-## Summary
-- [Introduction](#introduction)
-- [Core Features](#core-features)
-- [Architecture & Tech Stack](#architecture--tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Roadmap](#roadmap)
+---
 
-## Introduction
-Have you ever wanted to take control of your routine tasks, but never found a simple and intuitive way to do it? If your answer is _Yes_, you're exactly in the right place!
-Welcome to CronGoal, the open-source goal-tracking application designed with simplicity in mind!
+## O que é
 
-This repository houses the Frontend Web UI of the CronGoal ecosystem. Built on top of Next.js, it offers a seamless, fast, and highly responsive user experience to manage your goals, complete daily routines, and claim rewards. 
+O CronGoal é uma aplicação de produtividade pessoal gamificada que ajuda o usuário a organizar tarefas, rotinas e projetos de forma visual e intuitiva. Este repositório contém o **frontend web** — a interface que o usuário vê e interage diretamente.
 
-## Core Features
-- **Interactive Dashboard:** A centralized view of your progress, upcoming tasks, and quick actions.
-- **Dynamic Kanban Board:** Visually manage your project tasks with a flexible column structure and native drag-and-drop support.
-- **Routine & Task Management:** Easily create, update, and track daily routines with custom periodicities (daily, weekly, monthly, etc.) and specific tasks.
-- **Project Lifecycles:** Overdue project tracking with automatic penalty logic (half points) and completed state validation.
-- **Gamification Interface:** Engaging UI for tracking points (`PointsContext`), viewing history, and redeeming rewards.
-- **Visual Progress Charts:** Interactive charts for visualizing user performance, habit streak updates, and task completion trends.
-- **PDF/CSV Report Generation:** Export comprehensive, filtered reports for tasks, projects, routines, and rewards using a programmatic layout.
-- **Secure Access & Auth Guards:** Protected routes and a seamless authentication flow that integrates natively with the backend API.
-- **Responsive Design:** Fully responsive layout built with modern CSS practices for both desktop and mobile views.
+Se você já tentou tomar controle da sua rotina mas nunca encontrou uma ferramenta simples o suficiente para isso, esse projeto foi feito pra você. A proposta é eliminar a complexidade desnecessária e entregar uma experiência direta — sem ficar mais tempo configurando a ferramenta do que realmente gerenciando suas metas.
 
-## Architecture & Tech Stack
-This frontend is built leveraging modern web technologies to ensure a scalable and maintainable codebase, mirroring the strictness and structure of the backend API.
+## Por que existe
 
-- **Framework:** [Next.js](https://nextjs.org/) using the modern App Router (`app/` directory).
-- **Library:** [React](https://reactjs.org/) for building reusable user interfaces.
-- **Language:** [TypeScript](https://www.typescriptlang.org/) for type safety, enhanced developer experience, and shared interfaces (`types/`).
-- **Styling:** Tailwind CSS (via PostCSS) for utility-first, scalable responsive styling.
-- **Validation:** Zod schemas (`schemas/`) for strict frontend form validation, sharing the exact same structure as the backend DTOs.
-- **State Management:** React Context (`contexts/PointsContext.tsx`) for global point tracking and standard React hooks for local state.
-- **API Integration:** Abstracted service layer (`services/`) utilizing a central API client (`lib/api.ts`) to communicate with the Express backend.
+Esse projeto nasceu dentro da disciplina de **Desenvolvimento de Aplicações para a Internet (DAI)** na **UNIVATES**, mas vai além de uma entrega acadêmica. A motivação real veio da frustração com ferramentas de produtividade que ou são simples demais e não sustentam uso real, ou são tão complexas que viram um obstáculo a mais.
 
-## Project Structure
+O CronGoal preenche esse espaço: é robusto o bastante para acompanhar projetos com Kanban, rotinas periódicas e um sistema de recompensas gamificado — mas sem exigir do usuário uma curva de aprendizado absurda. A ideia é que ele funcione como um aliado no dia a dia, não como mais uma obrigação.
 
-```text
-app/                    # Next.js App Router pages and nested layouts
-├── (auth)/             # Authentication routes (login, register, logout)
-├── (dashboard)/        # Protected dashboard routes (projects, tasks, rewards, routines, etc.)
+## Como funciona
+
+- **Linguagem principal:** TypeScript
+- **Framework / Runtime:** Next.js 16 (App Router) sobre React 19
+- **Estilização:** Tailwind CSS 4 via PostCSS
+- **Validação:** Zod (schemas espelhados do backend) + React Hook Form
+- **Estado global:** React Context (`PointsContext`) para gamificação em tempo real
+- **Integração API:** Camada de serviços abstraída via Axios com client centralizado (`lib/api.ts`)
+- **Relatórios:** Geração programática de PDF (pdfmake) e exportação CSV com filtros avançados
+- **Tema:** Suporte a dark/light mode via `next-themes`
+
+### Estrutura do projeto
+
+```
+app/                    # Páginas e layouts do Next.js App Router
+├── (auth)/             # Rotas de autenticação (login, registro, logout)
+├── (dashboard)/        # Rotas protegidas (projetos, tarefas, recompensas, rotinas)
 ├── favicon.ico
-├── globals.css         # Global stylesheets (Tailwind imports)
-├── layout.tsx          # Root layout
+├── globals.css         # Estilos globais (imports Tailwind)
+├── layout.tsx          # Layout raiz
 ├── page.tsx            # Landing page
-└── providers.tsx       # Global React context providers
-components/             # Reusable modular React components
-├── auth/               # Authentication forms (Login, Register)
-├── dashboard/          # Dashboard specific components
-├── home/               # Landing page components (Features, Steps, Values)
-├── kanban/             # Kanban board, columns, and cards
+└── providers.tsx       # Providers globais de contexto React
+components/             # Componentes React modulares e reutilizáveis
+├── auth/               # Formulários de autenticação (Login, Registro)
+├── dashboard/          # Componentes específicos do dashboard
+├── home/               # Componentes da landing page (Features, Steps, Values)
+├── kanban/             # Board Kanban, colunas e cards
 ├── layout/             # Navbar, Sidebar, PopUps, Toasters, AuthGuards
-├── projects/           # Project related components
-├── rewards/            # Reward related components
-├── routines/           # Routine related components
-├── tasks/              # Task related components
-└── ui/                 # Generic, atomic UI elements (Badges, Buttons, etc.)
-contexts/               # React Context providers
-└── PointsContext.tsx   # Global state for user's gamification points
-lib/                    # Utility libraries
-└── api.ts              # Axios or Fetch based API client configuration
-schemas/                # Zod validation schemas (mirrors backend schemas)
+├── projects/           # Componentes de projetos
+├── rewards/            # Componentes de recompensas
+├── routines/           # Componentes de rotinas
+├── tasks/              # Componentes de tarefas
+└── ui/                 # Elementos atômicos de UI (Badges, Buttons, etc.)
+contexts/               # Providers de contexto React
+└── PointsContext.tsx   # Estado global dos pontos de gamificação
+lib/                    # Bibliotecas utilitárias
+└── api.ts              # Client HTTP centralizado (Axios)
+schemas/                # Schemas de validação Zod (espelho do backend)
 ├── auth.schema.ts
 ├── kanban.schema.ts
 └── ...
-services/               # API call wrappers organized by domain
+services/               # Wrappers de chamadas à API organizados por domínio
 ├── auth.service.ts
 ├── kanban.service.ts
 └── ...
-types/                  # Custom TypeScript type definitions
+types/                  # Definições de tipos TypeScript
 ├── kanban.ts
 ├── project.ts
 └── ...
 ```
 
-## Getting Started
+## Como rodar localmente
 
-### Prerequisites
+### Pré-requisitos
 
-- [Node.js](https://nodejs.org/) (v18+)
-- Running instance of the **CronGoal Backend API** (Refer to the backend README for setup).
+- [Node.js](https://nodejs.org/) v18+
+- Instância do **Backend CronGoal** rodando (veja o [repositório do backend](https://github.com/matbdev/dpa-crongoal-backend))
 
-### 1. Clone the repository
+### Passos
+
 ```bash
-git clone https://github.com/your-username/dpa-crongoal-frontend.git
+# 1. Clonar o repositório
+git clone https://github.com/matbdev/dpa-crongoal-frontend.git
 cd dpa-crongoal-frontend
-```
 
-### 2. Install dependencies
-```bash
+# 2. Instalar dependências
 npm install
-```
 
-### 3. Configure environment variables
+# 3. Configurar variáveis de ambiente
+cp .env.template .env.local
+# Edite o .env.local com a URL do seu backend
 
-Create a `.env` or `.env.local` file in the root directory:
-```env
-# Backend API URL
-NEXT_PUBLIC_API_URL="http://localhost:5000/api"
-
-# Optional: Next.js specific environment variables
-# NEXT_PUBLIC_FE_URL="http://localhost:3000"
-```
-
-### 4. Run the development server
-```bash
+# 4. Iniciar o servidor de desenvolvimento
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`. 
+Depois abre `http://localhost:5001` no navegador.
 
-## Roadmap
-- [x] **Phase 1:** Next.js project scaffolding and folder architecture setup
-- [x] **Phase 2:** Base UI components and Layouts (Navbar, Sidebar, Landing Page)
-- [x] **Phase 3:** Integration of standard forms with Zod validation schemas
-- [x] **Phase 4:** API Service abstractions and Context providers setup
-- [x] **Phase 5:** Core domain pages (Dashboard, Projects, Tasks, Routines, Rewards)
-- [x] **Phase 6:** Kanban Board visual implementation
-- [x] **Phase 7:** Advanced drag-and-drop mechanics for Kanban
-- [x] **Phase 8:** Interactive progress charts and analytics dashboard
-- [x] **Phase 9:** Programmatic PDF/CSV report generation system with filters
+## Demonstração
 
----
-**If you like what you see here, give it a ⭐️ and follow me for future updates and projects!**
+| Screenshot | Descrição |
+|:--:|:--|
+| ![Landing page](assets/initial-page.png) | **Landing page** — Tela inicial com CTA e apresentação do produto |
+| ![Dashboard](assets/dashboard-page.png) | **Dashboard** — Visão geral com métricas, gráficos semanais e progresso diário |
+| ![Projetos](assets/projects-page.png) | **Projetos** — Cards de projetos com status, prazo e contagem de tarefas |
+| ![Tarefas (Kanban)](assets/task-page.png) | **Tarefas** — Board Kanban com colunas A Fazer, Em Andamento e Concluído |
+| ![Recompensas](assets/rewards-page.png) | **Recompensas** — Catálogo de recompensas resgatáveis com custo em pontos |
+| ![Rotinas](assets/routine-page.png) | **Rotinas** — Listagem de rotinas com periodicidade e total de tarefas |
+| ![Tarefas da rotina](assets/routine-tasks-page.png) | **Tarefas da rotina** — Kanban interno de uma rotina específica |
+| ![Modal de relatórios](assets/reports-export-modal.png) | **Relatórios** — Modal com opções de listagem completa e relatórios filtráveis |
+| ![Exportação com filtros](assets/task-export-example-modal.png) | **Exportação** — Filtros avançados para gerar PDF ou CSV de tarefas |
+
+## Decisões técnicas
+
+- **Next.js App Router em vez de Pages Router:** A adoção do App Router foi intencional para aproveitar Server Components, layouts aninhados e a organização natural por rotas. A pasta `(auth)` e `(dashboard)` usam route groups para separar layouts sem afetar a URL.
+
+- **Tailwind CSS 4:** A escolha pelo Tailwind veio da velocidade de prototipação e da consistência visual. O design system inteiro é baseado em utility classes, o que elimina a necessidade de CSS custom para a maioria dos componentes e mantém o bundle enxuto.
+
+- **Zod espelhado do backend:** Os schemas de validação do frontend replicam exatamente os DTOs do backend. Isso garante que um formulário que passa na validação local vai ser aceito pela API sem surpresas. A integração com React Hook Form via `@hookform/resolvers` torna isso transparente.
+
+- **PointsContext como estado global:** Em vez de usar uma lib de state management (Redux, Zustand), o sistema de pontos usa um Context simples. O motivo: o CronGoal precisa de pouquíssimo estado global — basicamente só o saldo de pontos. Adicionar uma lib inteira seria overengineering.
+
+- **Geração de relatórios no frontend:** A decisão de gerar PDFs e CSVs direto no cliente (via `pdfmake`) foi proposital. Isso evita carga extra no backend, permite filtros dinâmicos sem roundtrips adicionais, e dá ao usuário controle total sobre o que exportar antes de gerar o arquivo.
+
+- **Gamificação como feature de primeira classe:** O sistema de pontos e recompensas não foi um "nice to have" — foi projetado desde o início como parte central da experiência. Cada tarefa concluída gera pontos; cada recompensa resgatada deduz pontos. O histórico de resgates é rastreado por completo.
+
+## Próximos passos
+
+- [ ] Testes E2E com Playwright para fluxos críticos
+- [ ] Modo offline com Service Worker e cache local
+- [ ] Notificações push para rotinas pendentes
+- [ ] Deploy em produção com CI/CD
+- [ ] Internacionalização (i18n)
+
+## Sobre
+
+Feito por **Mateus Carniel Brambilla** ([@matbdev](https://github.com/matbdev))
+durante a disciplina de Desenvolvimento de Aplicações para a Internet (DAI) na UNIVATES.
+
+Submetido ao [`git show 2026`](https://jeferson-scheibler.github.io/git-show-dati/),
+iniciativa do Diretório Acadêmico de Tecnologia da Informação (DATI)
+da UNIVATES.
+
+[![git show 2026](https://img.shields.io/badge/git_show-2026-79f2c5?style=flat-square&labelColor=000000)](https://jeferson-scheibler.github.io/git-show-dati/)
